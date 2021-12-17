@@ -5,24 +5,26 @@ import type { RootState } from '../store';
 // Define a type for the slice state
 interface AuthState {
   userDetails: {
-    email: string;
+    username: string;
     password: string;
+    isAdmin: boolean;
   };
   sessionContext: {
     isAuthenticated: boolean;
-    redirectPath: string;
+    user: Record<string, unknown>;
   };
 }
 
 // Define the initial state using that type
 const initialState: AuthState = {
   userDetails: {
-    email: '',
-    password: ''
+    username: '',
+    password: '',
+    isAdmin: false
   },
   sessionContext: {
     isAuthenticated: false,
-    redirectPath: ''
+    user: {}
   }
 };
 
@@ -30,20 +32,21 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    saveUser: (state, action) => {
+    loginUser: (state, action) => {
       state.userDetails = {
-        email: action.payload.email,
-        password: action.payload.password
+        username: action.payload.username,
+        password: action.payload.password,
+        isAdmin: false
       };
       state.sessionContext = {
         isAuthenticated: true,
-        redirectPath: action.payload.path
+        user: action.payload.user
       };
     },
-    updateSessionContext: (state, action) => {
-      state.sessionContext = {
-        isAuthenticated: true,
-        redirectPath: action.payload.path
+    registerUser: (state, action) => {
+      state.userDetails = {
+        ...state.userDetails,
+        username: action.payload.username
       };
     },
     logOutUser: (state) => {
@@ -53,7 +56,7 @@ export const authSlice = createSlice({
   }
 });
 
-export const { saveUser, updateSessionContext, logOutUser } = authSlice.actions;
+export const { loginUser, registerUser, logOutUser } = authSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectAuth = (state: RootState) => state.auth.userDetails;

@@ -1,62 +1,82 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 
-import { RootState } from '../../../app/redux/store';
-import { saveUser } from '../../../app/redux/slices/authSlice';
+import { userSignUp } from '../../../api/eventListApi';
 
 import './Register.scss';
 
 const Register = () => {
-  const [emailInput, setUsernameInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const authState = useSelector((state: RootState) => state.auth);
-
-  const handleTextInput = (event: React.FormEvent<HTMLInputElement>) => {
+  const handleTextInput = (
+    event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setUsernameInput(event.currentTarget.value);
   };
 
-  const handlePasswordInput = (event: React.FormEvent<HTMLInputElement>) => {
+  const handlePasswordInput = (
+    event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setPasswordInput(event.currentTarget.value);
   };
 
-  const dispatch = useDispatch();
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    console.log(
-      'registered email: ',
-      emailInput,
-      ', password: ',
-      passwordInput
-    );
-    dispatch(saveUser({ email: emailInput, password: passwordInput }));
+  // const dispatch = useDispatch();
+  const handleSubmit = () => {
+    if (usernameInput && passwordInput) {
+      userSignUp({
+        username: usernameInput,
+        password: passwordInput,
+        isAdmin: false
+      }).then((result) => {
+        console.log(result);
+        if (result.status === 500) {
+          setErrorMessage(result.data.message);
+        } else {
+          setErrorMessage('');
+        }
+      });
+    } else {
+      setErrorMessage('Username and Password required.');
+    }
   };
 
   return (
     <>
-      <h1>Register Page</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="emailInput"
-          type="text"
-          placeholder="Enter email"
-          value={emailInput}
-          onChange={handleTextInput}
-        />
-        <input
-          name="passwordInput"
-          type="password"
-          placeholder="Enter password"
-          value={passwordInput}
-          onChange={handlePasswordInput}
-        />
-        <button onClick={handleSubmit}>Login</button>
-      </form>
-      <p>New user registered as:</p>
-      {`{
-          email: '${authState.userDetails.email}'
-          password: '${authState.userDetails.password}'
-        }`}
+      <Typography variant="h4" gutterBottom component="div">
+        Register
+      </Typography>
+      <Stack spacing={2}>
+        {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : ''}
+        <form onSubmit={handleSubmit} method="post">
+          <Stack spacing={2} direction="row">
+            <TextField
+              required
+              id="outlined-required"
+              label="Username"
+              placeholder="Enter username"
+              value={usernameInput}
+              onChange={handleTextInput}
+            />
+            <TextField
+              required
+              id="outlined-required"
+              label="Password"
+              placeholder="Password"
+              value={passwordInput}
+              onChange={handlePasswordInput}
+            />
+            <Button variant="contained" onClick={handleSubmit}>
+              Register
+            </Button>
+          </Stack>
+        </form>
+      </Stack>
     </>
   );
 };
