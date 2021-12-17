@@ -3,12 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { RootState } from '../../app/redux/store';
 
-import CustomButton from '../../components/CustomButton/CustomButton';
-import CustomTextInput from '../../components/CustomTextInput/CustomTextInput';
 import Todo from './components/Todo/Todo';
 
 import './TodoList.scss';
-import { addTodo } from './todoListSlice';
+import { addTodo } from '../../app/redux/slices/todoListSlice';
 
 const TodoList = () => {
   const [todoInput, setTodoInput] = useState('');
@@ -38,13 +36,14 @@ const TodoList = () => {
     <section className="todoList-section">
       <div className="todoList-container">
         <h1>Todo List Home</h1>
-        <CustomTextInput
+        <input
+          type="text"
           name="todoInput"
           placeholder="Add a task"
           value={todoInput}
           onChange={handleInputChange}
         />
-        <CustomButton onClick={handleAddTodo}>Add Todo</CustomButton>
+        <button onClick={handleAddTodo}>Add Todo</button>
         {renderTodoList}
       </div>
     </section>
