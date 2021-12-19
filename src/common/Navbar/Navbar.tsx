@@ -19,7 +19,6 @@ function Navbar() {
     event.preventDefault();
     dispatch(logOutUser());
   };
-  console.log(authState.sessionContext.user);
 
   return (
     <>
@@ -44,7 +43,7 @@ function Navbar() {
           {authState.sessionContext.isAuthenticated ? (
             <>
               <Typography variant="h6" component="div">
-                Welcome, {authState.sessionContext.user.username}
+                Welcome, {authState.sessionContext.session.username}
               </Typography>
               <Button color="inherit">
                 <Link to="/events">Events</Link>

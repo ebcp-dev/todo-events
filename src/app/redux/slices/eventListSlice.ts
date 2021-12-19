@@ -1,24 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit';
+// import { getEventThunk } from '../../../api/eventListApi';
 
 import type { RootState } from '../store';
 
-interface Event {
-  _id: string;
+export interface IEvent {
+  _id?: string;
+  id?: string;
   from: string;
   to: string;
   content: string;
-  isCompleted: boolean;
-  creator: string;
+  isCompleted?: boolean;
+  creator?: string;
 }
 
 // Define a type for the slice state
 interface EventListState {
-  value: Array<Event>;
+  events: Array<IEvent>;
+  loading: boolean;
 }
 
 // Define the initial state using that type
 const initialState: EventListState = {
-  value: []
+  events: [],
+  loading: false
 };
 
 export const eventListSlice = createSlice({
@@ -26,28 +30,45 @@ export const eventListSlice = createSlice({
   initialState,
   reducers: {
     addEvent: (state, action) => {
-      state.value.push(action.payload);
+      state.events.push(action.payload);
     },
-    setEventList: (state, action) => {
-      state.value = action.payload.events;
+    setEventsList: (state, action) => {
+      if (action.payload.meta.requestStatus === 'pending') {
+        state.loading = true;
+      }
+      if (action.payload.meta.requestStatus === 'fulfilled') {
+        state.events = action.payload.payload.result;
+        state.loading = false;
+      }
+      if (action.payload.meta.requestStatus === 'rejected') {
+        state.loading = false;
+      }
     },
     removeEvent: (state, action) => {
-      const eventIndex = state.value.indexOf(action.payload);
+      const eventIndex = state.events.indexOf(action.payload);
 
       if (eventIndex > -1) {
-        state.value.splice(eventIndex, 1);
+        state.events.splice(eventIndex, 1);
       }
     },
     removeLastEvent: (state) => {
-      state.value.pop();
+      state.events.pop();
+    },
+    emptyEventsList: (state) => {
+      state.events.splice(0, state.events.length);
     }
   }
 });
 
-export const { addEvent, setEventList, removeEvent, removeLastEvent } =
-  eventListSlice.actions;
+export const {
+  addEvent,
+  setEventsList,
+  removeEvent,
+  removeLastEvent,
+  emptyEventsList
+} = eventListSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectTodoList = (state: RootState) => state.eventList.value;
+export const selectTodoList = (state: RootState) => state.eventList.events;
 
 export default eventListSlice.reducer;

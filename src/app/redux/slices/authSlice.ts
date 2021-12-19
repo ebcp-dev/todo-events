@@ -3,28 +3,18 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 
 // Define a type for the slice state
-interface AuthState {
-  userDetails: {
-    username: string;
-    password: string;
-    isAdmin: boolean;
-  };
+export interface IAuthState {
   sessionContext: {
     isAuthenticated: boolean;
-    user: Record<string, unknown>;
+    session: Record<string, unknown>;
   };
 }
 
 // Define the initial state using that type
-const initialState: AuthState = {
-  userDetails: {
-    username: '',
-    password: '',
-    isAdmin: false
-  },
+const initialState: IAuthState = {
   sessionContext: {
-    isAuthenticated: false,
-    user: {}
+    isAuthenticated: localStorage.getItem('token') ? true : false,
+    session: {}
   }
 };
 
@@ -33,25 +23,22 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     loginUser: (state, action) => {
-      state.userDetails = {
-        username: action.payload.username,
-        password: action.payload.password,
-        isAdmin: false
-      };
       state.sessionContext = {
-        isAuthenticated: true,
-        user: action.payload.user
+        isAuthenticated: action.payload.session.token,
+        session: action.payload.session
       };
+
+      localStorage.setItem('token', action.payload.session.token);
     },
     registerUser: (state, action) => {
-      state.userDetails = {
-        ...state.userDetails,
-        username: action.payload.username
+      state.sessionContext = {
+        ...state.sessionContext,
+        session: action.payload.session
       };
     },
     logOutUser: (state) => {
-      state = initialState;
-      return state;
+      state.sessionContext.isAuthenticated = false;
+      localStorage.removeItem('token');
     }
   }
 });
@@ -59,6 +46,6 @@ export const authSlice = createSlice({
 export const { loginUser, registerUser, logOutUser } = authSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectAuth = (state: RootState) => state.auth.userDetails;
+export const selectAuth = (state: RootState) => state.auth;
 
 export default authSlice.reducer;

@@ -13,6 +13,7 @@ const Register = () => {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleTextInput = (
     event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -26,21 +27,26 @@ const Register = () => {
     setPasswordInput(event.currentTarget.value);
   };
 
-  // const dispatch = useDispatch();
   const handleSubmit = () => {
     if (usernameInput && passwordInput) {
       userSignUp({
         username: usernameInput,
         password: passwordInput,
         isAdmin: false
-      }).then((result) => {
-        console.log(result);
-        if (result.status === 500) {
-          setErrorMessage(result.data.message);
-        } else {
+      })
+        .then((result) => {
+          console.log(result);
           setErrorMessage('');
-        }
-      });
+          setUsernameInput('');
+          setPasswordInput('');
+          setSuccessMessage(
+            'User created. You can now log in to your account.'
+          );
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data.message);
+          setSuccessMessage('');
+        });
     } else {
       setErrorMessage('Username and Password required.');
     }
@@ -51,8 +57,7 @@ const Register = () => {
       <Typography variant="h4" gutterBottom component="div">
         Register
       </Typography>
-      <Stack spacing={2}>
-        {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : ''}
+      <Stack spacing={2} sx={{ mb: 4 }}>
         <form onSubmit={handleSubmit} method="post">
           <Stack spacing={2} direction="row">
             <TextField
@@ -77,6 +82,8 @@ const Register = () => {
           </Stack>
         </form>
       </Stack>
+      {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : ''}
+      {successMessage ? <Alert severity="success">{successMessage}</Alert> : ''}
     </>
   );
 };

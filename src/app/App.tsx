@@ -7,18 +7,18 @@ import Navbar from '../common/Navbar/Navbar';
 
 import Register from '../pages/auth/Register/Register';
 import Login from '../pages/auth/Login/Login';
-import EventList from '../pages/EventList/EventList';
+import EventList from '../pages/Events/EventList';
 import NotFound from '../pages/NotFound/NotFound';
 
 import './App.scss';
 
-import ProtectedOutlet from '../utils/ProtectedOutlet';
+import ProtectedOutlet from '../utils/routes/ProtectedOutlet';
 
 const App = () => {
   return (
     <BrowserRouter>
       <Navbar />
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="md">
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

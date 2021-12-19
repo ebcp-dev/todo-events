@@ -1,5 +1,10 @@
 import axios from 'axios';
 
+import axiosWithAuth from './axiosWithAuth';
+
+import { IEvent } from '../app/redux/slices/eventListSlice';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+
 const url = 'http://localhost:4000/';
 
 interface User {
@@ -8,54 +13,65 @@ interface User {
   isAdmin?: boolean;
 }
 
-export const userSignUp = (user: User) => {
+export const userSignUp = async (user: User) => {
   const newUser: User = {
     username: user.username,
     password: user.password,
     isAdmin: user.isAdmin
   };
 
-  return axios
-    .post(url + 'api/user/signup', newUser)
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+  const signUpResponse = await axios.post(url + 'api/user/signup', newUser);
+
+  return await signUpResponse.data;
 };
 
-export const userLogin = (user: User) => {
+export const userLogin = async (user: User) => {
   const loginInfo: User = {
     username: user.username,
     password: user.password
   };
 
-  return axios
-    .post(url + 'api/user/login', loginInfo)
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+  const loginResponse = await axios.post(url + 'api/user/login', loginInfo);
+
+  return await loginResponse.data;
 };
 
-export const getEvent = (offset: string, limit: string, token: string) => {
-  const offsetParam = offset ? `?offset=${offset}` : '';
-  const limitParam = limit ? `&limit=${limit}` : '';
-  const getUrl = url + `api/event/${offsetParam}${limitParam}`;
+export const getEventThunk = createAsyncThunk(
+  'events/getEvents',
+  async (args: { offset?: string; limit?: string }) => {
+    const offsetParam = args.offset ? `?offset=${args.offset}` : '';
+    const limitParam = args.limit ? `&limit=${args.limit}` : '';
+    const getUrl = url + `api/event/${offsetParam}${limitParam}`;
 
-  return axios
-    .get(getUrl, {
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
-    })
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-};
+    const getResponse = await axiosWithAuth().get(getUrl);
+
+    return await getResponse.data;
+  }
+);
+
+export const postEventThunk = createAsyncThunk(
+  'events/postEvent',
+  async (args: { eventObject: IEvent }) => {
+    const postResponse = await axiosWithAuth().post(
+      url + 'api/event/',
+      args.eventObject
+    );
+
+    return await postResponse.data;
+  }
+);
+
+export const putEventThunk = createAsyncThunk(
+  'events/putEvent',
+  async (args: { eventObject: IEvent }) => {
+    const editId = args.eventObject._id
+      ? args.eventObject._id
+      : args.eventObject.id;
+    const putResponse = await axiosWithAuth().put(
+      url + `api/event/${editId}`,
+      args.eventObject
+    );
+
+    return await putResponse.data;
+  }
+);

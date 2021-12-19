@@ -14,8 +14,8 @@ import { loginUser } from '../../../app/redux/slices/authSlice';
 import './Login.scss';
 
 const Login = () => {
-  const [usernameInput, setUsernameInput] = useState('');
-  const [passwordInput, setPasswordInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState('testemail');
+  const [passwordInput, setPasswordInput] = useState('testpass');
   const [errorMessage, setErrorMessage] = useState('');
 
   const dispatch = useDispatch();
@@ -38,15 +38,15 @@ const Login = () => {
       userLogin({
         username: usernameInput,
         password: passwordInput
-      }).then((result) => {
-        console.log(result);
-        if (result.status === 500) {
-          setErrorMessage(result.data.message);
-        } else {
+      })
+        .then((response) => {
+          console.log(response.message);
           setErrorMessage('');
-          dispatch(loginUser({ user: result.data }));
-        }
-      });
+          dispatch(loginUser({ session: response.data }));
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data.message);
+        });
     } else {
       setErrorMessage('Username and Password required.');
     }
@@ -57,8 +57,7 @@ const Login = () => {
       <Typography variant="h4" gutterBottom component="div">
         Login
       </Typography>
-      <Stack spacing={2}>
-        {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : ''}
+      <Stack spacing={2} sx={{ mb: 4 }}>
         <form onSubmit={handleSubmit}>
           <Stack spacing={2} direction="row">
             <TextField
@@ -83,6 +82,13 @@ const Login = () => {
           </Stack>
         </form>
       </Stack>
+      {errorMessage ? (
+        <Alert severity="error" sx={{ mb: 4 }}>
+          {errorMessage}
+        </Alert>
+      ) : (
+        ''
+      )}
     </>
   );
 
