@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   DataGrid,
@@ -8,52 +8,69 @@ import {
   GridSortItem
 } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
 import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 import {
-  emptyEventsList,
-  removeEvent,
-  setEventsList
+  IEvent,
+  removeEvent
 } from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch, RootState } from '../../../../app/redux/store';
-import { deleteEventThunk, getEventThunk } from '../../../../api/eventListApi';
-import CustomToolbar from './CustomToolbar';
+import { deleteEventThunk, putEventThunk } from '../../../../api/eventListApi';
 
 import './EventTable.scss';
 
 const EventTable = () => {
+  // default sorting model for Data Grid
   const [sortModel, setSortModel] = useState<GridSortItem[]>([
     {
       field: 'from',
       sort: 'desc'
     }
   ]);
-  const [editRowsModel, setEditRowsModel] = useState({});
+  const [editRowsModel, setEditRowsModel] = useState<GridEditRowsModel>({});
+  // Feedback alerts
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   const dispatch = useDispatch<AppDispatch>();
   const eventListState = useSelector((state: RootState) => state.eventList);
 
-  useEffect(() => {
-    dispatch(getEventThunk({}))
-      .then((response) => {
-        dispatch(setEventsList(response.payload.result));
-      })
-      .catch((error) => {
-        console.log(error);
-        setErrorMessage(`Failed to retrieve events.`);
-      });
-    return () => {
-      emptyEventsList();
-    };
-  }, [dispatch]);
-
   const handleEditRowsModelChange = useCallback((model: GridEditRowsModel) => {
+    // Parse to IEvent object
     setEditRowsModel(model);
   }, []);
 
-  const handleDeleteClick = (id) => () => {
+  const handleSaveClick = () => (event) => {
+    event.stopPropagation();
+    if (Object.entries(editRowsModel).length > 0) {
+      // parse into IEvent object
+      const completedValue =
+        Object.entries(editRowsModel)[0][1].isCompleted.value;
+      const editEvent: IEvent = {
+        id: Object.entries(editRowsModel)[0][0],
+        from: `${Object.entries(editRowsModel)[0][1].from.value}`,
+        to: `${Object.entries(editRowsModel)[0][1].to.value}`,
+        content: `${Object.entries(editRowsModel)[0][1].content.value}`,
+        isCompleted: completedValue ? true : false
+      };
+      // putEvent dispatch
+      dispatch(putEventThunk({ eventObject: editEvent }))
+        .then((response) => {
+          console.log(response);
+          setSuccessMessage(response.payload.message);
+        })
+        .catch((error) => {
+          console.log(error);
+          setErrorMessage(`Failed to update event!`);
+          setSuccessMessage(``);
+        });
+    }
+  };
+
+  const handleDeleteClick = (id) => (event) => {
+    event.stopPropagation();
     if (id) {
       const eventObj = eventListState.events.find((obj) => obj.id === id);
       dispatch(deleteEventThunk({ eventId: id }))
@@ -94,15 +111,23 @@ const EventTable = () => {
     },
     {
       field: 'actions',
-      headerName: 'Delete',
+      headerName: 'Actions',
       type: 'actions',
       flex: 1,
       getActions: ({ id }) => {
         return [
           <GridActionsCellItem
             key={id}
+            icon={<SaveIcon sx={{ color: '#03AAF9' }} />}
+            label="Save"
+            className="textPrimary"
+            onClick={handleSaveClick()}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            key={id}
             icon={<DeleteIcon sx={{ color: '#BB1C2A' }} />}
-            label="Edit"
+            label="Delete"
             className="textPrimary"
             onClick={handleDeleteClick(id)}
             color="inherit"
@@ -112,50 +137,61 @@ const EventTable = () => {
     }
   ];
 
+  const errorAlert = (
+    <Snackbar
+      open={errorMessage ? true : false}
+      autoHideDuration={6000}
+      onClose={() => {
+        setErrorMessage('');
+      }}
+    >
+      <Alert
+        severity="error"
+        onClose={() => {
+          setErrorMessage('');
+        }}
+      >
+        {errorMessage}
+      </Alert>
+    </Snackbar>
+  );
+
+  const successAlert = (
+    <Snackbar
+      open={successMessage ? true : false}
+      autoHideDuration={6000}
+      onClose={() => {
+        setSuccessMessage('');
+      }}
+    >
+      <Alert
+        severity="success"
+        onClose={() => {
+          setSuccessMessage('');
+        }}
+      >
+        {successMessage}
+      </Alert>
+    </Snackbar>
+  );
+
   return (
-    <div style={{ height: 500, width: '100%' }}>
-      {errorMessage ? (
-        <Alert
-          severity="error"
-          onClose={() => {
-            setErrorMessage('');
-          }}
-        >
-          {errorMessage}
-        </Alert>
-      ) : (
-        ''
-      )}
-      {successMessage ? (
-        <Alert
-          severity="success"
-          onClose={() => {
-            setSuccessMessage('');
-          }}
-        >
-          {successMessage}
-        </Alert>
-      ) : (
-        ''
-      )}
-      <DataGrid
-        sx={{ mt: 4 }}
-        rowCount={50}
-        rows={eventListState.events}
-        columns={gridColumns}
-        sortModel={sortModel}
-        onSortModelChange={(model) => setSortModel(model)}
-        editMode="row"
-        editRowsModel={editRowsModel}
-        onEditRowsModelChange={handleEditRowsModelChange}
-        components={{
-          Toolbar: CustomToolbar
-        }}
-        componentsProps={{
-          toolbar: { editRowsModel }
-        }}
-      />
-    </div>
+    <>
+      {errorAlert}
+      {successAlert}
+      <div style={{ height: 500, width: '100%' }}>
+        <DataGrid
+          rowCount={50}
+          rows={eventListState.events}
+          columns={gridColumns}
+          sortModel={sortModel}
+          onSortModelChange={(model) => setSortModel(model)}
+          editMode="row"
+          editRowsModel={editRowsModel}
+          onEditRowsModelChange={handleEditRowsModelChange}
+        />
+      </div>
+    </>
   );
 };
 

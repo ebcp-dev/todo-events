@@ -74,33 +74,14 @@ export const eventListSlice = createSlice({
       );
       state.events = updatedEvents;
     },
-    updateEvent: (state, action) => {
-      // find event by id in state
-      state.events.find((obj, index) => {
-        // remove by index if found
-
-        if (obj.id === action.payload) {
-          state.events.splice(index, 1);
-        }
-      });
-    },
-    removeLastEvent: (state) => {
-      state.events.pop();
-    },
     emptyEventsList: (state) => {
       state.events = [];
     }
   }
 });
 
-export const {
-  addEvent,
-  setEventsList,
-  removeEvent,
-  updateEvent,
-  removeLastEvent,
-  emptyEventsList
-} = eventListSlice.actions;
+export const { addEvent, setEventsList, removeEvent, emptyEventsList } =
+  eventListSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectTodoList = (state: RootState) => state.eventList.events;

@@ -7,18 +7,26 @@ import DateTimePicker from '@mui/lab/DateTimePicker';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
+import AddIcon from '@mui/icons-material/Add';
+import Snackbar from '@mui/material/Snackbar';
 
 import { addEvent, IEvent } from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch } from '../../../../app/redux/store';
+import Grid from '@mui/material/Grid';
 
 const AddEvent = () => {
-  const [fromDate, setFromDate] = useState<Date | null>(new Date());
-  const [toDate, setToDate] = useState<Date | null>(new Date());
-  const [eventInput, setEventInput] = useState('test 1');
+  // Set default toDate 1 hour ahead of fromDate
+  const defaultFromDate = new Date();
+  const defaultToDate = new Date(defaultFromDate);
+  defaultToDate.setHours(defaultToDate.getHours() + 1);
+  // Form values
+  const [fromDate, setFromDate] = useState<Date | null>(defaultFromDate);
+  const [toDate, setToDate] = useState<Date | null>(defaultToDate);
+  const [eventInput, setEventInput] = useState('');
   const [eventCompleted, setEventCompleted] = useState(false);
+  // Feedback alerts
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -27,6 +35,9 @@ const AddEvent = () => {
   const handleAddEvent = () => {
     if (!fromDate || !toDate || !eventInput) {
       setErrorMessage('Enter an event to add.');
+      setSuccessMessage(``);
+    } else if (fromDate.getTime() >= toDate.getTime()) {
+      setErrorMessage(`'To' date must be after 'From' date.`);
       setSuccessMessage(``);
     } else {
       const event: IEvent = {
@@ -61,34 +72,50 @@ const AddEvent = () => {
     setEventCompleted(!eventCompleted);
   };
 
+  const errorAlert = (
+    <Snackbar
+      open={errorMessage ? true : false}
+      autoHideDuration={6000}
+      onClose={() => {
+        setErrorMessage('');
+      }}
+    >
+      <Alert
+        severity="error"
+        onClose={() => {
+          setErrorMessage('');
+        }}
+      >
+        {errorMessage}
+      </Alert>
+    </Snackbar>
+  );
+
+  const successAlert = (
+    <Snackbar
+      open={successMessage ? true : false}
+      autoHideDuration={6000}
+      onClose={() => {
+        setSuccessMessage('');
+      }}
+    >
+      <Alert
+        severity="success"
+        onClose={() => {
+          setSuccessMessage('');
+        }}
+      >
+        {successMessage}
+      </Alert>
+    </Snackbar>
+  );
+
   return (
     <>
-      {errorMessage ? (
-        <Alert
-          severity="error"
-          onClose={() => {
-            setErrorMessage('');
-          }}
-        >
-          {errorMessage}
-        </Alert>
-      ) : (
-        ''
-      )}
-      {successMessage ? (
-        <Alert
-          severity="success"
-          onClose={() => {
-            setSuccessMessage('');
-          }}
-        >
-          {successMessage}
-        </Alert>
-      ) : (
-        ''
-      )}
-      <form onSubmit={handleAddEvent}>
-        <Stack spacing={2} direction={'row'} sx={{ mb: 4 }}>
+      {errorAlert}
+      {successAlert}
+      <Grid container spacing={1}>
+        <Grid item>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DateTimePicker
               renderInput={(props) => <TextField {...props} />}
@@ -99,6 +126,8 @@ const AddEvent = () => {
               }}
             />
           </LocalizationProvider>
+        </Grid>
+        <Grid item>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DateTimePicker
               renderInput={(props) => <TextField {...props} />}
@@ -109,6 +138,8 @@ const AddEvent = () => {
               }}
             />
           </LocalizationProvider>
+        </Grid>
+        <Grid item>
           <TextField
             required
             id="outlined-required"
@@ -117,17 +148,26 @@ const AddEvent = () => {
             value={eventInput}
             onChange={handleTextInput}
           />
+        </Grid>
+        <Grid item>
           <FormControlLabel
             control={
               <Checkbox checked={eventCompleted} onChange={handleCheckbox} />
             }
             label="Completed"
           />
-          <Button variant="contained" onClick={handleAddEvent}>
-            Add Event
+        </Grid>
+        <Grid item>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={handleAddEvent}
+          >
+            Add
           </Button>
-        </Stack>
-      </form>
+        </Grid>
+      </Grid>
     </>
   );
 };

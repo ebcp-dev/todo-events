@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 import { RootState } from '../../../app/redux/store';
 import { userLogin } from '../../../api/eventListApi';
@@ -14,8 +15,8 @@ import { loginUser } from '../../../app/redux/slices/authSlice';
 import './Login.scss';
 
 const Login = () => {
-  const [usernameInput, setUsernameInput] = useState('testemail');
-  const [passwordInput, setPasswordInput] = useState('testpass');
+  const [usernameInput, setUsernameInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const dispatch = useDispatch();
@@ -51,6 +52,25 @@ const Login = () => {
     }
   };
 
+  const errorAlert = (
+    <Snackbar
+      open={errorMessage ? true : false}
+      autoHideDuration={6000}
+      onClose={() => {
+        setErrorMessage('');
+      }}
+    >
+      <Alert
+        severity="error"
+        onClose={() => {
+          setErrorMessage('');
+        }}
+      >
+        {errorMessage}
+      </Alert>
+    </Snackbar>
+  );
+
   const loginPage = (
     <>
       <Typography variant="h4" gutterBottom component="div">
@@ -79,18 +99,7 @@ const Login = () => {
           </Stack>
         </form>
       </Stack>
-      {errorMessage ? (
-        <Alert
-          severity="error"
-          onClose={() => {
-            setErrorMessage('');
-          }}
-        >
-          {errorMessage}
-        </Alert>
-      ) : (
-        ''
-      )}
+      {errorAlert}
     </>
   );
 

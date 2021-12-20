@@ -4,6 +4,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 import { userSignUp } from '../../../api/eventListApi';
 
@@ -67,6 +68,44 @@ const Register = () => {
     }
   };
 
+  const errorAlert = (
+    <Snackbar
+      open={errorMessage ? true : false}
+      autoHideDuration={6000}
+      onClose={() => {
+        setErrorMessage('');
+      }}
+    >
+      <Alert
+        severity="error"
+        onClose={() => {
+          setErrorMessage('');
+        }}
+      >
+        {errorMessage}
+      </Alert>
+    </Snackbar>
+  );
+
+  const successAlert = (
+    <Snackbar
+      open={successMessage ? true : false}
+      autoHideDuration={6000}
+      onClose={() => {
+        setSuccessMessage('');
+      }}
+    >
+      <Alert
+        severity="success"
+        onClose={() => {
+          setSuccessMessage('');
+        }}
+      >
+        {successMessage}
+      </Alert>
+    </Snackbar>
+  );
+
   return (
     <>
       <Typography variant="h4" gutterBottom component="div">
@@ -105,30 +144,8 @@ const Register = () => {
           </Stack>
         </form>
       </Stack>
-      {errorMessage ? (
-        <Alert
-          severity="error"
-          onClose={() => {
-            setErrorMessage('');
-          }}
-        >
-          {errorMessage}
-        </Alert>
-      ) : (
-        ''
-      )}
-      {successMessage ? (
-        <Alert
-          severity="success"
-          onClose={() => {
-            setSuccessMessage('');
-          }}
-        >
-          {successMessage}
-        </Alert>
-      ) : (
-        ''
-      )}
+      {errorAlert}
+      {successAlert}
     </>
   );
 };
