@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-// import { getEventThunk } from '../../../api/eventListApi';
 
 import type { RootState } from '../store';
 
@@ -30,7 +29,20 @@ export const eventListSlice = createSlice({
   initialState,
   reducers: {
     addEvent: (state, action) => {
-      state.events.push(action.payload);
+      const dateTimeFormat = new Intl.DateTimeFormat('en-us', {
+        month: 'numeric',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+      });
+      const event = {
+        ...action.payload,
+        // parse from ISOstring
+        from: dateTimeFormat.format(new Date(action.payload.from)),
+        to: dateTimeFormat.format(new Date(action.payload.to))
+      };
+      state.events.push(event);
     },
     setEventsList: (state, action) => {
       state.loading = true;
@@ -48,6 +60,7 @@ export const eventListSlice = createSlice({
           // api returns event._id to event.id after postEvent
           // but getEvents response has event._id
           id: event._id ? event._id : event.id,
+          // parse from ISOstring
           from: dateTimeFormat.format(new Date(event.from)),
           to: dateTimeFormat.format(new Date(event.to))
         });
@@ -56,11 +69,20 @@ export const eventListSlice = createSlice({
       state.loading = false;
     },
     removeEvent: (state, action) => {
-      const eventIndex = state.events.indexOf(action.payload);
+      const updatedEvents = state.events.filter(
+        (event) => event.id !== action.payload.id
+      );
+      state.events = updatedEvents;
+    },
+    updateEvent: (state, action) => {
+      // find event by id in state
+      state.events.find((obj, index) => {
+        // remove by index if found
 
-      if (eventIndex > -1) {
-        state.events.splice(eventIndex, 1);
-      }
+        if (obj.id === action.payload) {
+          state.events.splice(index, 1);
+        }
+      });
     },
     removeLastEvent: (state) => {
       state.events.pop();
@@ -75,6 +97,7 @@ export const {
   addEvent,
   setEventsList,
   removeEvent,
+  updateEvent,
   removeLastEvent,
   emptyEventsList
 } = eventListSlice.actions;

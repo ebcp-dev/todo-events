@@ -21,17 +21,18 @@ const App = () => {
   // check for token in localStorage
   if (localStorage.getItem('session')) {
     const localSession = JSON.parse(`${localStorage.getItem('session')}`);
-    console.log(localSession);
 
     dispatch(setCurrentUser(localSession));
 
     // Compare current time to token expiration
-    const currentTime = new Date();
     const loginTime = new Date(localSession.lastLogin);
+    const currentTime = new Date();
 
     const timeDiff = currentTime.getTime() - loginTime.getTime();
 
-    if (localSession.expiresIn > timeDiff) {
+    if (localSession.expiresIn < timeDiff / 1000) {
+      console.log('token expired');
+
       dispatch(logOutUser());
       dispatch(emptyEventsList());
     }

@@ -75,3 +75,14 @@ export const putEventThunk = createAsyncThunk(
     return await putResponse.data;
   }
 );
+
+export const deleteEventThunk = createAsyncThunk(
+  'events/deleteEvent',
+  async (args: { eventId: string }) => {
+    const deleteResponse = await axiosWithAuth().delete(
+      url + 'api/event/' + args.eventId
+    );
+
+    return await deleteResponse.data;
+  }
+);

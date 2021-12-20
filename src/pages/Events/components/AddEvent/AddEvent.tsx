@@ -11,13 +11,10 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 
-import {
-  IEvent,
-  setEventsList
-} from '../../../../app/redux/slices/eventListSlice';
+import { addEvent, IEvent } from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch } from '../../../../app/redux/store';
 
-const AddEvent = (props: { eventsList: IEvent[] }) => {
+const AddEvent = () => {
   const [fromDate, setFromDate] = useState<Date | null>(new Date());
   const [toDate, setToDate] = useState<Date | null>(new Date());
   const [eventInput, setEventInput] = useState('test 1');
@@ -41,12 +38,10 @@ const AddEvent = (props: { eventsList: IEvent[] }) => {
       dispatch(postEventThunk({ eventObject: event }))
         .then((response) => {
           setSuccessMessage(response.payload.message);
-          const addEvent = props.eventsList.concat(response.payload.data);
-          dispatch(setEventsList(addEvent));
+          dispatch(addEvent(response.payload.data));
         })
         .catch((error) => {
           console.log(error);
-
           setErrorMessage(`Failed to add event!`);
           setSuccessMessage(``);
         });
