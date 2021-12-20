@@ -1,5 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+// Material UI
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+// Material UI Data Grid
 import {
   DataGrid,
   GridActionsCellItem,
@@ -7,16 +13,13 @@ import {
   GridEditRowsModel,
   GridSortItem
 } from '@mui/x-data-grid';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
-
+// State management
 import {
   IEvent,
   removeEvent
 } from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch, RootState } from '../../../../app/redux/store';
+// API
 import { deleteEventThunk, putEventThunk } from '../../../../api/eventListApi';
 
 import './EventTable.scss';
@@ -42,7 +45,7 @@ const EventTable = () => {
     setEditRowsModel(model);
   }, []);
 
-  const handleSaveClick = () => (event) => {
+  const handleSaveClick = (id) => (event) => {
     event.stopPropagation();
     if (Object.entries(editRowsModel).length > 0) {
       // parse into IEvent object
@@ -56,16 +59,19 @@ const EventTable = () => {
         isCompleted: completedValue ? true : false
       };
       // putEvent dispatch
-      dispatch(putEventThunk({ eventObject: editEvent }))
-        .then((response) => {
-          console.log(response);
-          setSuccessMessage(response.payload.message);
-        })
-        .catch((error) => {
-          console.log(error);
-          setErrorMessage(`Failed to update event!`);
-          setSuccessMessage(``);
-        });
+      // Only update if save button in edited row is clicked
+      if (id === editEvent.id) {
+        dispatch(putEventThunk({ eventObject: editEvent }))
+          .then((response) => {
+            console.log(response);
+            setSuccessMessage(response.payload.message);
+          })
+          .catch((error) => {
+            console.log(error);
+            setErrorMessage(`Failed to update event!`);
+            setSuccessMessage(``);
+          });
+      }
     }
   };
 
@@ -121,7 +127,7 @@ const EventTable = () => {
             icon={<SaveIcon sx={{ color: '#03AAF9' }} />}
             label="Save"
             className="textPrimary"
-            onClick={handleSaveClick()}
+            onClick={handleSaveClick(id)}
             color="inherit"
           />,
           <GridActionsCellItem

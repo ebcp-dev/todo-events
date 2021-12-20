@@ -1,12 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+// Material UI
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-
-import { RootState } from '../../app/redux/store';
+// State management
+import { AppDispatch, RootState } from '../../app/redux/store';
 import { logOutUser } from '../../app/redux/slices/authSlice';
 
 import './Navbar.scss';
@@ -14,7 +15,8 @@ import './Navbar.scss';
 function Navbar() {
   const authState = useSelector((state: RootState) => state.auth);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+
   const handleLogout = (event: React.FormEvent) => {
     event.preventDefault();
     dispatch(logOutUser());

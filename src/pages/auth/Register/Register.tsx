@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
+// Material UI
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-
+// API
 import { userSignUp } from '../../../api/eventListApi';
 
 import './Register.scss';
 
 const Register = () => {
+  // Form values
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+  // Feedback alerts
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -49,13 +52,13 @@ const Register = () => {
       })
         .then((result) => {
           console.log(result);
-          setErrorMessage('');
           setUsernameInput('');
           setPasswordInput('');
           setConfirmPasswordInput('');
           setSuccessMessage(
             'User created. You can now log in to your account.'
           );
+          setErrorMessage('');
         })
         .catch((error) => {
           setErrorMessage(error.response.data.message);
@@ -116,7 +119,6 @@ const Register = () => {
           <Stack spacing={2} direction="row">
             <TextField
               required
-              id="outlined-required"
               label="Username"
               placeholder="Enter username"
               value={usernameInput}
@@ -124,16 +126,16 @@ const Register = () => {
             />
             <TextField
               required
-              id="outlined-required"
               label="Password"
+              type={'password'}
               placeholder="Password"
               value={passwordInput}
               onChange={handlePasswordInput}
             />
             <TextField
               required
-              id="outlined-required"
               label="Confirm Password"
+              type={'password'}
               placeholder="Confirm Password"
               value={confirmPasswordInput}
               onChange={handleConfirmPasswordInput}

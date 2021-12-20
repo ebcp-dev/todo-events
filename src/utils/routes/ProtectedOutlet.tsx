@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router';
-
+// State management
 import { RootState } from '../../app/redux/store';
 
 const ProtectedOutlet = () => {

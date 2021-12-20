@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { postEventThunk } from '../../../../api/eventListApi';
+// Material UI
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DateTimePicker from '@mui/lab/DateTimePicker';
@@ -11,10 +11,12 @@ import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import AddIcon from '@mui/icons-material/Add';
 import Snackbar from '@mui/material/Snackbar';
-
+import Grid from '@mui/material/Grid';
+// State management
 import { addEvent, IEvent } from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch } from '../../../../app/redux/store';
-import Grid from '@mui/material/Grid';
+// API
+import { postEventThunk } from '../../../../api/eventListApi';
 
 const AddEvent = () => {
   // Set default toDate 1 hour ahead of fromDate

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+// Material UI
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-
+// State management
 import { AppDispatch, RootState } from '../../app/redux/store';
-import { getEventThunk } from '../../api/eventListApi';
 import { setEventsList } from '../../app/redux/slices/eventListSlice';
-
+// API
+import { getEventThunk } from '../../api/eventListApi';
+// Components
 import EventTable from './components/EventTable/EventTable';
 import AddEvent from './components/AddEvent/AddEvent';
 

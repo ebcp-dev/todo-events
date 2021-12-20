@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
+// Material UI
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-
-import { RootState } from '../../../app/redux/store';
-import { userLogin } from '../../../api/eventListApi';
+// State management
+import { AppDispatch, RootState } from '../../../app/redux/store';
 import { loginUser } from '../../../app/redux/slices/authSlice';
+// API
+import { userLogin } from '../../../api/eventListApi';
 
 import './Login.scss';
 
 const Login = () => {
+  // Form values
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  // Feedback alerts
   const [errorMessage, setErrorMessage] = useState('');
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const authState = useSelector((state: RootState) => state.auth);
 
   const handleTextInput = (
@@ -80,15 +84,14 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <Stack spacing={2} direction="row">
             <TextField
-              id="outlined-required"
               label="Username"
               placeholder="Enter username"
               value={usernameInput}
               onChange={handleTextInput}
             />
             <TextField
-              id="outlined-required"
               label="Password"
+              type={'password'}
               placeholder="Password"
               value={passwordInput}
               onChange={handlePasswordInput}
