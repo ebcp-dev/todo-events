@@ -1,20 +1,41 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Container from '@mui/material/Container';
 
 import Navbar from '../common/Navbar/Navbar';
 // import Footer from '../common/Footer/Footer';
-
 import Register from '../pages/auth/Register/Register';
 import Login from '../pages/auth/Login/Login';
-import EventList from '../pages/Events/EventList';
+import Events from '../pages/Events/Events';
 import NotFound from '../pages/NotFound/NotFound';
+
+import { logOutUser, setCurrentUser } from './redux/slices/authSlice';
+import { emptyEventsList } from './redux/slices/eventListSlice';
+import ProtectedOutlet from '../utils/routes/ProtectedOutlet';
 
 import './App.scss';
 
-import ProtectedOutlet from '../utils/routes/ProtectedOutlet';
-
 const App = () => {
+  const dispatch = useDispatch();
+  // check for token in localStorage
+  if (localStorage.getItem('session')) {
+    const localSession = JSON.parse(`${localStorage.getItem('session')}`);
+    console.log(localSession);
+
+    dispatch(setCurrentUser(localSession));
+
+    // Compare current time to token expiration
+    const currentTime = new Date();
+    const loginTime = new Date(localSession.lastLogin);
+
+    const timeDiff = currentTime.getTime() - loginTime.getTime();
+
+    if (localSession.expiresIn > timeDiff) {
+      dispatch(logOutUser());
+      dispatch(emptyEventsList());
+    }
+  }
   return (
     <BrowserRouter>
       <Navbar />
@@ -24,7 +45,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           {/* protected routes */}
           <Route path="/events" element={<ProtectedOutlet />}>
-            <Route path="/events" element={<EventList />} />
+            <Route path="/events" element={<Events />} />
           </Route>
           {/* protected routes */}
           <Route path="*" element={<NotFound />} />

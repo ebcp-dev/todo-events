@@ -1,64 +1,54 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { getEventThunk, postEventThunk } from '../../../../api/eventListApi';
-import Alert from '@mui/material/Alert';
+import { postEventThunk } from '../../../../api/eventListApi';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DateTimePicker from '@mui/lab/DateTimePicker';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
 
 import {
-  addEvent,
-  emptyEventsList,
   IEvent,
   setEventsList
 } from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch } from '../../../../app/redux/store';
 
-const AddEvent = () => {
+const AddEvent = (props: { eventsList: IEvent[] }) => {
+  const [fromDate, setFromDate] = useState<Date | null>(new Date());
+  const [toDate, setToDate] = useState<Date | null>(new Date());
   const [eventInput, setEventInput] = useState('test 1');
   const [eventCompleted, setEventCompleted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const dispatch = useDispatch<AppDispatch>();
 
-  useEffect(() => {
-    dispatch(getEventThunk({}))
-      .then((response) => {
-        dispatch(setEventsList(response));
-      })
-      .catch((error) => {
-        setErrorMessage(error.response.data.message);
-      });
-    return () => {
-      emptyEventsList();
-    };
-  }, [dispatch]);
-
   const handleAddEvent = () => {
-    if (!eventInput) {
+    if (!fromDate || !toDate || !eventInput) {
       setErrorMessage('Enter an event to add.');
+      setSuccessMessage(``);
     } else {
-      const minusHour = new Date();
-      minusHour.setHours(minusHour.getHours() - 1);
       const event: IEvent = {
-        from: minusHour.toISOString(),
-        to: new Date().toISOString(),
+        from: fromDate.toISOString(),
+        to: toDate.toISOString(),
         content: eventInput,
         isCompleted: eventCompleted
       };
       dispatch(postEventThunk({ eventObject: event }))
         .then((response) => {
-          if (response.meta.requestStatus === 'rejected') {
-            setErrorMessage('Failed to add event.');
-          } else {
-            dispatch(addEvent(response.payload.data));
-          }
+          setSuccessMessage(response.payload.message);
+          const addEvent = props.eventsList.concat(response.payload.data);
+          dispatch(setEventsList(addEvent));
         })
         .catch((error) => {
-          console.log(error.response);
-          setErrorMessage(error.response.data.message);
+          console.log(error);
+
+          setErrorMessage(`Failed to add event!`);
+          setSuccessMessage(``);
         });
       setEventInput('');
       setEventCompleted(false);
@@ -75,11 +65,55 @@ const AddEvent = () => {
   const handleCheckbox = () => {
     setEventCompleted(!eventCompleted);
   };
+
   return (
     <>
-      {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : ''}
+      {errorMessage ? (
+        <Alert
+          severity="error"
+          onClose={() => {
+            setErrorMessage('');
+          }}
+        >
+          {errorMessage}
+        </Alert>
+      ) : (
+        ''
+      )}
+      {successMessage ? (
+        <Alert
+          severity="success"
+          onClose={() => {
+            setSuccessMessage('');
+          }}
+        >
+          {successMessage}
+        </Alert>
+      ) : (
+        ''
+      )}
       <form onSubmit={handleAddEvent}>
         <Stack spacing={2} direction={'row'} sx={{ mb: 4 }}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DateTimePicker
+              renderInput={(props) => <TextField {...props} />}
+              label="From"
+              value={fromDate}
+              onChange={(newValue) => {
+                setFromDate(newValue);
+              }}
+            />
+          </LocalizationProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DateTimePicker
+              renderInput={(props) => <TextField {...props} />}
+              label="To"
+              value={toDate}
+              onChange={(newValue) => {
+                setToDate(newValue);
+              }}
+            />
+          </LocalizationProvider>
           <TextField
             required
             id="outlined-required"

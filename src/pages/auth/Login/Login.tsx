@@ -40,7 +40,6 @@ const Login = () => {
         password: passwordInput
       })
         .then((response) => {
-          console.log(response.message);
           setErrorMessage('');
           dispatch(loginUser({ session: response.data }));
         })
@@ -61,7 +60,6 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <Stack spacing={2} direction="row">
             <TextField
-              required
               id="outlined-required"
               label="Username"
               placeholder="Enter username"
@@ -69,7 +67,6 @@ const Login = () => {
               onChange={handleTextInput}
             />
             <TextField
-              required
               id="outlined-required"
               label="Password"
               placeholder="Password"
@@ -83,7 +80,12 @@ const Login = () => {
         </form>
       </Stack>
       {errorMessage ? (
-        <Alert severity="error" sx={{ mb: 4 }}>
+        <Alert
+          severity="error"
+          onClose={() => {
+            setErrorMessage('');
+          }}
+        >
           {errorMessage}
         </Alert>
       ) : (

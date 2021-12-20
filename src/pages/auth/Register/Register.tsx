@@ -12,6 +12,7 @@ import './Register.scss';
 const Register = () => {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -27,8 +28,19 @@ const Register = () => {
     setPasswordInput(event.currentTarget.value);
   };
 
+  const handleConfirmPasswordInput = (
+    event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setConfirmPasswordInput(event.currentTarget.value);
+  };
+
   const handleSubmit = () => {
-    if (usernameInput && passwordInput) {
+    if (
+      usernameInput &&
+      passwordInput &&
+      confirmPasswordInput &&
+      passwordInput === confirmPasswordInput
+    ) {
       userSignUp({
         username: usernameInput,
         password: passwordInput,
@@ -39,6 +51,7 @@ const Register = () => {
           setErrorMessage('');
           setUsernameInput('');
           setPasswordInput('');
+          setConfirmPasswordInput('');
           setSuccessMessage(
             'User created. You can now log in to your account.'
           );
@@ -47,6 +60,8 @@ const Register = () => {
           setErrorMessage(error.response.data.message);
           setSuccessMessage('');
         });
+    } else if (passwordInput !== confirmPasswordInput) {
+      setErrorMessage('Passwords do not match.');
     } else {
       setErrorMessage('Username and Password required.');
     }
@@ -76,14 +91,44 @@ const Register = () => {
               value={passwordInput}
               onChange={handlePasswordInput}
             />
+            <TextField
+              required
+              id="outlined-required"
+              label="Confirm Password"
+              placeholder="Confirm Password"
+              value={confirmPasswordInput}
+              onChange={handleConfirmPasswordInput}
+            />
             <Button variant="contained" onClick={handleSubmit}>
               Register
             </Button>
           </Stack>
         </form>
       </Stack>
-      {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : ''}
-      {successMessage ? <Alert severity="success">{successMessage}</Alert> : ''}
+      {errorMessage ? (
+        <Alert
+          severity="error"
+          onClose={() => {
+            setErrorMessage('');
+          }}
+        >
+          {errorMessage}
+        </Alert>
+      ) : (
+        ''
+      )}
+      {successMessage ? (
+        <Alert
+          severity="success"
+          onClose={() => {
+            setSuccessMessage('');
+          }}
+        >
+          {successMessage}
+        </Alert>
+      ) : (
+        ''
+      )}
     </>
   );
 };

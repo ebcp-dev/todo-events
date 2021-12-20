@@ -13,7 +13,7 @@ export interface IAuthState {
 // Define the initial state using that type
 const initialState: IAuthState = {
   sessionContext: {
-    isAuthenticated: localStorage.getItem('token') ? true : false,
+    isAuthenticated: false,
     session: {}
   }
 };
@@ -24,11 +24,17 @@ export const authSlice = createSlice({
   reducers: {
     loginUser: (state, action) => {
       state.sessionContext = {
-        isAuthenticated: action.payload.session.token,
+        isAuthenticated: JSON.stringify(action.payload) === '{}' ? false : true,
         session: action.payload.session
       };
-
       localStorage.setItem('token', action.payload.session.token);
+      localStorage.setItem('session', JSON.stringify(action.payload.session));
+    },
+    setCurrentUser: (state, action) => {
+      state.sessionContext = {
+        isAuthenticated: JSON.stringify(action.payload) === '{}' ? false : true,
+        session: action.payload
+      };
     },
     registerUser: (state, action) => {
       state.sessionContext = {
@@ -37,13 +43,17 @@ export const authSlice = createSlice({
       };
     },
     logOutUser: (state) => {
-      state.sessionContext.isAuthenticated = false;
-      localStorage.removeItem('token');
+      state.sessionContext = {
+        isAuthenticated: false,
+        session: {}
+      };
+      localStorage.clear();
     }
   }
 });
 
-export const { loginUser, registerUser, logOutUser } = authSlice.actions;
+export const { loginUser, setCurrentUser, registerUser, logOutUser } =
+  authSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectAuth = (state: RootState) => state.auth;

@@ -33,16 +33,27 @@ export const eventListSlice = createSlice({
       state.events.push(action.payload);
     },
     setEventsList: (state, action) => {
-      if (action.payload.meta.requestStatus === 'pending') {
-        state.loading = true;
-      }
-      if (action.payload.meta.requestStatus === 'fulfilled') {
-        state.events = action.payload.payload.result;
-        state.loading = false;
-      }
-      if (action.payload.meta.requestStatus === 'rejected') {
-        state.loading = false;
-      }
+      state.loading = true;
+
+      action.payload.forEach((event) => {
+        const dateTimeFormat = new Intl.DateTimeFormat('en-us', {
+          month: 'numeric',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric'
+        });
+        state.events.push({
+          ...event,
+          // api returns event._id to event.id after postEvent
+          // but getEvents response has event._id
+          id: event._id ? event._id : event.id,
+          from: dateTimeFormat.format(new Date(event.from)),
+          to: dateTimeFormat.format(new Date(event.to))
+        });
+      });
+
+      state.loading = false;
     },
     removeEvent: (state, action) => {
       const eventIndex = state.events.indexOf(action.payload);
@@ -55,7 +66,7 @@ export const eventListSlice = createSlice({
       state.events.pop();
     },
     emptyEventsList: (state) => {
-      state.events.splice(0, state.events.length);
+      state.events = [];
     }
   }
 });
