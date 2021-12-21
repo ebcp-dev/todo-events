@@ -1,8 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Material UI
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 // Material Icons
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
@@ -12,7 +10,8 @@ import {
   GridActionsCellItem,
   GridColumns,
   GridEditRowsModel,
-  GridSortItem
+  GridSortItem,
+  GridValueFormatterParams
 } from '@mui/x-data-grid';
 // State management
 import {
@@ -22,6 +21,8 @@ import {
 import { AppDispatch, RootState } from '../../../../app/redux/store';
 // API
 import { deleteEventThunk, putEventThunk } from '../../../../api/eventListApi';
+// Components
+import AlertMessage from '../../../../common/Alerts/AlertMessage';
 
 import './EventTable.scss';
 
@@ -33,6 +34,7 @@ const EventTable = () => {
       sort: 'desc'
     }
   ]);
+  // Editing state
   const [editRowsModel, setEditRowsModel] = useState<GridEditRowsModel>({});
   // Feedback alerts
   const [errorMessage, setErrorMessage] = useState('');
@@ -47,30 +49,29 @@ const EventTable = () => {
 
   const handleSaveClick = (id) => (event) => {
     event.stopPropagation();
-    // Need to convert editRowsModel to array to get keys
     if (Object.entries(editRowsModel).length > 0) {
+      // Need to convert editRowsModel to array to get keys
+      const eventObj = Object.entries(editRowsModel)[0][1];
+      const fromValue = eventObj.from.value;
+      const toValue = eventObj.to.value;
       // parse into IEvent object
-      const completedValue =
-        Object.entries(editRowsModel)[0][1].isCompleted.value;
-      const fromValue = Object.entries(editRowsModel)[0][1].from.value;
-      const toValue = Object.entries(editRowsModel)[0][1].to.value;
-      const editEvent: IEvent = {
+      const editedEvent: IEvent = {
         id: Object.entries(editRowsModel)[0][0],
         from: `${fromValue}`,
         to: `${toValue}`,
-        content: `${Object.entries(editRowsModel)[0][1].content.value}`,
-        isCompleted: completedValue ? true : false
+        content: `${eventObj.content.value}`,
+        isCompleted: eventObj.isCompleted.value ? true : false
       };
       // putEvent dispatch
       // Only update if save button in edited row is clicked
-      if (id === editEvent.id) {
+      if (id === editedEvent.id) {
         const fromDate = new Date(`${fromValue}`);
         const toDate = new Date(`${toValue}`);
         if (fromDate.getTime() >= toDate.getTime()) {
           setErrorMessage(`'To' date must be after 'From' date.`);
           setSuccessMessage('');
         } else {
-          dispatch(putEventThunk({ eventObject: editEvent }))
+          dispatch(putEventThunk({ eventObject: editedEvent }))
             .then((response) => {
               console.log(response);
               setSuccessMessage(response.payload.message);
@@ -88,6 +89,7 @@ const EventTable = () => {
   const handleDeleteClick = (id) => (event) => {
     event.stopPropagation();
     if (id) {
+      // Find and remove from redux state
       const eventObj = eventListState.events.find((obj) => obj.id === id);
       dispatch(deleteEventThunk({ eventId: id }))
         .then((response) => {
@@ -102,20 +104,36 @@ const EventTable = () => {
     }
   };
 
+  const dateTimeFormat = new Intl.DateTimeFormat('en-us', {
+    month: 'numeric',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric'
+  });
+
   const gridColumns: GridColumns = [
     {
       field: 'from',
       headerName: 'From',
       type: 'dateTime',
       flex: 1,
-      editable: true
+      editable: true,
+      valueFormatter: (params: GridValueFormatterParams) => {
+        // first converts to JS Date, then to locale option through date-fns
+        return dateTimeFormat.format(new Date(params.value as string));
+      }
     },
     {
       field: 'to',
       headerName: 'To',
       type: 'dateTime',
       flex: 1,
-      editable: true
+      editable: true,
+      valueFormatter: (params: GridValueFormatterParams) => {
+        // first converts to JS Date, then to locale option through date-fns
+        return dateTimeFormat.format(new Date(params.value as string));
+      }
     },
     { field: 'content', headerName: 'Content', flex: 1, editable: true },
     {
@@ -153,48 +171,13 @@ const EventTable = () => {
     }
   ];
 
-  const errorAlert = (
-    <Snackbar
-      open={errorMessage ? true : false}
-      autoHideDuration={6000}
-      onClose={() => {
-        setErrorMessage('');
-      }}
-    >
-      <Alert
-        severity="error"
-        onClose={() => {
-          setErrorMessage('');
-        }}
-      >
-        {errorMessage}
-      </Alert>
-    </Snackbar>
-  );
-
-  const successAlert = (
-    <Snackbar
-      open={successMessage ? true : false}
-      autoHideDuration={6000}
-      onClose={() => {
-        setSuccessMessage('');
-      }}
-    >
-      <Alert
-        severity="success"
-        onClose={() => {
-          setSuccessMessage('');
-        }}
-      >
-        {successMessage}
-      </Alert>
-    </Snackbar>
-  );
-
   return (
     <div style={{ height: 500, width: '100%' }}>
-      {errorAlert}
-      {successAlert}
+      <AlertMessage
+        alertType={errorMessage ? 'error' : 'success'}
+        alertMessage={errorMessage ? errorMessage : successMessage}
+        setAlertMessage={errorMessage ? setErrorMessage : setSuccessMessage}
+      />
       <DataGrid
         editMode="row"
         rowCount={50}

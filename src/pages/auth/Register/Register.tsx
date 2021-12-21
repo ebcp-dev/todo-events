@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 // API
 import { userSignUp } from '../../../api/eventListApi';
+// Components
+import AlertMessage from '../../../common/Alerts/AlertMessage';
 
 import './Register.scss';
 
@@ -73,48 +73,13 @@ const Register = () => {
     }
   };
 
-  const errorAlert = (
-    <Snackbar
-      open={errorMessage ? true : false}
-      autoHideDuration={6000}
-      onClose={() => {
-        setErrorMessage('');
-      }}
-    >
-      <Alert
-        severity="error"
-        onClose={() => {
-          setErrorMessage('');
-        }}
-      >
-        {errorMessage}
-      </Alert>
-    </Snackbar>
-  );
-
-  const successAlert = (
-    <Snackbar
-      open={successMessage ? true : false}
-      autoHideDuration={6000}
-      onClose={() => {
-        setSuccessMessage('');
-      }}
-    >
-      <Alert
-        severity="success"
-        onClose={() => {
-          setSuccessMessage('');
-        }}
-      >
-        {successMessage}
-      </Alert>
-    </Snackbar>
-  );
-
   return (
     <Container component="main">
-      {errorAlert}
-      {successAlert}
+      <AlertMessage
+        alertType={errorMessage ? 'error' : 'success'}
+        alertMessage={errorMessage ? errorMessage : successMessage}
+        setAlertMessage={errorMessage ? setErrorMessage : setSuccessMessage}
+      />
       <CssBaseline />
       <Box
         sx={{
@@ -136,6 +101,7 @@ const Register = () => {
             value={usernameInput}
             onChange={handleTextInput}
             sx={{ mb: 1 }}
+            error={errorMessage ? true : false}
           />
           <TextField
             required
@@ -146,6 +112,7 @@ const Register = () => {
             value={passwordInput}
             onChange={handlePasswordInput}
             sx={{ mb: 1 }}
+            error={errorMessage ? true : false}
           />
           <TextField
             required
@@ -156,6 +123,7 @@ const Register = () => {
             value={confirmPasswordInput}
             onChange={handleConfirmPasswordInput}
             sx={{ mb: 1 }}
+            error={errorMessage ? true : false}
           />
           <Button fullWidth variant="contained" onClick={handleSubmit}>
             Register

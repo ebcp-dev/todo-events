@@ -5,9 +5,9 @@ import type { RootState } from '../store';
 export interface IEvent {
   _id?: string;
   id?: string;
-  from: string;
-  to: string;
-  content: string;
+  from?: string;
+  to?: string;
+  content?: string;
   isCompleted?: boolean;
   creator?: string;
 }
@@ -24,26 +24,12 @@ const initialState: EventListState = {
   loading: false
 };
 
-const dateTimeFormat = new Intl.DateTimeFormat('en-us', {
-  month: 'numeric',
-  day: 'numeric',
-  year: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric'
-});
-
 export const eventListSlice = createSlice({
   name: 'eventList',
   initialState,
   reducers: {
     addEvent: (state, action) => {
-      const event = {
-        ...action.payload,
-        // parse from ISOstring for display
-        from: dateTimeFormat.format(new Date(action.payload.from)),
-        to: dateTimeFormat.format(new Date(action.payload.to))
-      };
-      state.events.push(event);
+      state.events.push(action.payload);
     },
     setEventsList: (state, action) => {
       state.loading = true;
@@ -52,10 +38,7 @@ export const eventListSlice = createSlice({
           ...event,
           // api returns event._id to event.id after postEvent
           // but getEvents response has event._id
-          id: event._id ? event._id : event.id,
-          // parse from ISOstring to make it readable
-          from: dateTimeFormat.format(new Date(event.from)),
-          to: dateTimeFormat.format(new Date(event.to))
+          id: event._id ? event._id : event.id
         });
       });
 

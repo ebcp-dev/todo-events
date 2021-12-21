@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,6 +13,8 @@ import { AppDispatch, RootState } from '../../../app/redux/store';
 import { loginUser } from '../../../app/redux/slices/authSlice';
 // API
 import { userLogin } from '../../../api/eventListApi';
+// Components
+import AlertMessage from '../../../common/Alerts/AlertMessage';
 
 import './Login.scss';
 
@@ -59,28 +59,13 @@ const Login = () => {
     }
   };
 
-  const errorAlert = (
-    <Snackbar
-      open={errorMessage ? true : false}
-      autoHideDuration={6000}
-      onClose={() => {
-        setErrorMessage('');
-      }}
-    >
-      <Alert
-        severity="error"
-        onClose={() => {
-          setErrorMessage('');
-        }}
-      >
-        {errorMessage}
-      </Alert>
-    </Snackbar>
-  );
-
   const loginPage = (
     <Container component="main">
-      {errorAlert}
+      <AlertMessage
+        alertType={'error'}
+        alertMessage={errorMessage}
+        setAlertMessage={setErrorMessage}
+      />
       <CssBaseline />
       <Box
         sx={{
@@ -101,6 +86,7 @@ const Login = () => {
             value={usernameInput}
             onChange={handleTextInput}
             sx={{ mb: 1 }}
+            error={errorMessage ? true : false}
           />
           <TextField
             fullWidth
@@ -110,6 +96,7 @@ const Login = () => {
             value={passwordInput}
             onChange={handlePasswordInput}
             sx={{ mb: 1 }}
+            error={errorMessage ? true : false}
           />
           <Button fullWidth variant="contained" onClick={handleSubmit}>
             Login

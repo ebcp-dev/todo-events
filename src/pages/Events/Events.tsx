@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Material UI
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -15,6 +13,7 @@ import { getEventThunk } from '../../api/eventListApi';
 // Components
 import EventTable from './components/EventTable/EventTable';
 import AddEvent from './components/AddEvent/AddEvent';
+import AlertMessage from '../../common/Alerts/AlertMessage';
 
 import './Events.scss';
 
@@ -36,27 +35,13 @@ const Events = () => {
       });
   }, [dispatch]);
 
-  const errorAlert = (
-    <Snackbar
-      open={errorMessage ? true : false}
-      autoHideDuration={6000}
-      onClose={() => {
-        setErrorMessage('');
-      }}
-    >
-      <Alert
-        severity="error"
-        onClose={() => {
-          setErrorMessage('');
-        }}
-      >
-        {errorMessage}
-      </Alert>
-    </Snackbar>
-  );
-
   return (
     <Container component="main">
+      <AlertMessage
+        alertType={errorMessage ? 'error' : 'success'}
+        alertMessage={errorMessage}
+        setAlertMessage={setErrorMessage}
+      />
       <CssBaseline />
       <Box
         sx={{
@@ -69,7 +54,6 @@ const Events = () => {
         <Typography variant="h4" component="div">
           Events
         </Typography>
-        {errorAlert}
         <Box sx={{ mb: 4 }}>
           <AddEvent />
           {eventListState.loading ? 'loading events ...' : <EventTable />}

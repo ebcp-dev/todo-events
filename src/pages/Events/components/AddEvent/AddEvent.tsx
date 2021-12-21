@@ -8,8 +8,6 @@ import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -20,6 +18,8 @@ import { addEvent, IEvent } from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch } from '../../../../app/redux/store';
 // API
 import { postEventThunk } from '../../../../api/eventListApi';
+// Components
+import AlertMessage from '../../../../common/Alerts/AlertMessage';
 
 import './AddEvent.scss';
 
@@ -81,48 +81,13 @@ const AddEvent = () => {
     setEventCompleted(!eventCompleted);
   };
 
-  const errorAlert = (
-    <Snackbar
-      open={errorMessage ? true : false}
-      autoHideDuration={6000}
-      onClose={() => {
-        setErrorMessage('');
-      }}
-    >
-      <Alert
-        severity="error"
-        onClose={() => {
-          setErrorMessage('');
-        }}
-      >
-        {errorMessage}
-      </Alert>
-    </Snackbar>
-  );
-
-  const successAlert = (
-    <Snackbar
-      open={successMessage ? true : false}
-      autoHideDuration={6000}
-      onClose={() => {
-        setSuccessMessage('');
-      }}
-    >
-      <Alert
-        severity="success"
-        onClose={() => {
-          setSuccessMessage('');
-        }}
-      >
-        {successMessage}
-      </Alert>
-    </Snackbar>
-  );
-
   return (
     <>
-      {errorAlert}
-      {successAlert}
+      <AlertMessage
+        alertType={errorMessage ? 'error' : 'success'}
+        alertMessage={errorMessage ? errorMessage : successMessage}
+        setAlertMessage={errorMessage ? setErrorMessage : setSuccessMessage}
+      />
       <CssBaseline />
       <Box
         component="form"
@@ -154,6 +119,7 @@ const AddEvent = () => {
           </LocalizationProvider>
           <TextField
             required
+            error={errorMessage ? true : false}
             id="outlined-required"
             label="Event"
             placeholder="Add an event"
