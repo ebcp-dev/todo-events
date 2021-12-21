@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Navigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 // Material UI
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
 // State management
 import { AppDispatch, RootState } from '../../../app/redux/store';
 import { loginUser } from '../../../app/redux/slices/authSlice';
@@ -49,6 +51,7 @@ const Login = () => {
           dispatch(loginUser({ session: response.data }));
         })
         .catch((error) => {
+          console.log(error);
           setErrorMessage(error.response.data.message);
         });
     } else {
@@ -76,34 +79,44 @@ const Login = () => {
   );
 
   const loginPage = (
-    <>
-      <Typography variant="h4" gutterBottom component="div">
-        Login
-      </Typography>
-      <Stack spacing={2} sx={{ mb: 4 }}>
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={2} direction="row">
-            <TextField
-              label="Username"
-              placeholder="Enter username"
-              value={usernameInput}
-              onChange={handleTextInput}
-            />
-            <TextField
-              label="Password"
-              type={'password'}
-              placeholder="Password"
-              value={passwordInput}
-              onChange={handlePasswordInput}
-            />
-            <Button variant="contained" onClick={handleSubmit}>
-              Login
-            </Button>
-          </Stack>
-        </form>
-      </Stack>
+    <Container component="main">
       {errorAlert}
-    </>
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}
+      >
+        <Typography variant="h4" gutterBottom component="div">
+          Login
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <TextField
+            fullWidth
+            label="Username"
+            placeholder="Enter username"
+            value={usernameInput}
+            onChange={handleTextInput}
+            sx={{ mb: 1 }}
+          />
+          <TextField
+            fullWidth
+            label="Password"
+            type={'password'}
+            placeholder="Password"
+            value={passwordInput}
+            onChange={handlePasswordInput}
+            sx={{ mb: 1 }}
+          />
+          <Button fullWidth variant="contained" onClick={handleSubmit}>
+            Login
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 
   const redirectToEventsPage = <Navigate to="/events" />;

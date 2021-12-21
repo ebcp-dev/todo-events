@@ -1,9 +1,8 @@
 import axios from 'axios';
-
-import axiosWithAuth from './axiosWithAuth';
-
-import { IEvent } from '../app/redux/slices/eventListSlice';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+// Utils
+import axiosWithAuth from './axiosWithAuth';
+import { IEvent } from '../app/redux/slices/eventListSlice';
 
 const url = 'http://localhost:4000/';
 

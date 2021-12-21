@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 // Material UI
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
 // API
 import { userSignUp } from '../../../api/eventListApi';
 
@@ -52,12 +54,12 @@ const Register = () => {
       })
         .then((result) => {
           console.log(result);
-          setUsernameInput('');
-          setPasswordInput('');
-          setConfirmPasswordInput('');
           setSuccessMessage(
             'User created. You can now log in to your account.'
           );
+          setUsernameInput('');
+          setPasswordInput('');
+          setConfirmPasswordInput('');
           setErrorMessage('');
         })
         .catch((error) => {
@@ -110,45 +112,57 @@ const Register = () => {
   );
 
   return (
-    <>
-      <Typography variant="h4" gutterBottom component="div">
-        Register
-      </Typography>
-      <Stack spacing={2} sx={{ mb: 4 }}>
-        <form onSubmit={handleSubmit} method="post">
-          <Stack spacing={2} direction="row">
-            <TextField
-              required
-              label="Username"
-              placeholder="Enter username"
-              value={usernameInput}
-              onChange={handleTextInput}
-            />
-            <TextField
-              required
-              label="Password"
-              type={'password'}
-              placeholder="Password"
-              value={passwordInput}
-              onChange={handlePasswordInput}
-            />
-            <TextField
-              required
-              label="Confirm Password"
-              type={'password'}
-              placeholder="Confirm Password"
-              value={confirmPasswordInput}
-              onChange={handleConfirmPasswordInput}
-            />
-            <Button variant="contained" onClick={handleSubmit}>
-              Register
-            </Button>
-          </Stack>
-        </form>
-      </Stack>
+    <Container component="main">
       {errorAlert}
       {successAlert}
-    </>
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}
+      >
+        <Typography variant="h4" component="h1" gutterBottom>
+          Register
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            required
+            fullWidth
+            label="Username"
+            placeholder="Enter username"
+            value={usernameInput}
+            onChange={handleTextInput}
+            sx={{ mb: 1 }}
+          />
+          <TextField
+            required
+            fullWidth
+            label="Password"
+            type={'password'}
+            placeholder="Password"
+            value={passwordInput}
+            onChange={handlePasswordInput}
+            sx={{ mb: 1 }}
+          />
+          <TextField
+            required
+            fullWidth
+            label="Confirm Password"
+            type={'password'}
+            placeholder="Confirm Password"
+            value={confirmPasswordInput}
+            onChange={handleConfirmPasswordInput}
+            sx={{ mb: 1 }}
+          />
+          <Button fullWidth variant="contained" onClick={handleSubmit}>
+            Register
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

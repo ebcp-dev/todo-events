@@ -36,12 +36,6 @@ export const authSlice = createSlice({
         session: action.payload
       };
     },
-    registerUser: (state, action) => {
-      state.sessionContext = {
-        ...state.sessionContext,
-        session: action.payload.session
-      };
-    },
     logOutUser: (state) => {
       state.sessionContext = {
         isAuthenticated: false,
@@ -52,8 +46,7 @@ export const authSlice = createSlice({
   }
 });
 
-export const { loginUser, setCurrentUser, registerUser, logOutUser } =
-  authSlice.actions;
+export const { loginUser, setCurrentUser, logOutUser } = authSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectAuth = (state: RootState) => state.auth;

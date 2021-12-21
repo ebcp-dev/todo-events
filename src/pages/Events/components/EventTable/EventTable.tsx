@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Material UI
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+// Material Icons
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 // Material UI Data Grid
 import {
   DataGrid,
@@ -36,41 +37,50 @@ const EventTable = () => {
   // Feedback alerts
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  // Sets row data after editing
+  const handleEditRowsModelChange = useCallback((model: GridEditRowsModel) => {
+    setEditRowsModel(model);
+  }, []);
 
   const dispatch = useDispatch<AppDispatch>();
   const eventListState = useSelector((state: RootState) => state.eventList);
 
-  const handleEditRowsModelChange = useCallback((model: GridEditRowsModel) => {
-    // Parse to IEvent object
-    setEditRowsModel(model);
-  }, []);
-
   const handleSaveClick = (id) => (event) => {
     event.stopPropagation();
+    // Need to convert editRowsModel to array to get keys
     if (Object.entries(editRowsModel).length > 0) {
       // parse into IEvent object
       const completedValue =
         Object.entries(editRowsModel)[0][1].isCompleted.value;
+      const fromValue = Object.entries(editRowsModel)[0][1].from.value;
+      const toValue = Object.entries(editRowsModel)[0][1].to.value;
       const editEvent: IEvent = {
         id: Object.entries(editRowsModel)[0][0],
-        from: `${Object.entries(editRowsModel)[0][1].from.value}`,
-        to: `${Object.entries(editRowsModel)[0][1].to.value}`,
+        from: `${fromValue}`,
+        to: `${toValue}`,
         content: `${Object.entries(editRowsModel)[0][1].content.value}`,
         isCompleted: completedValue ? true : false
       };
       // putEvent dispatch
       // Only update if save button in edited row is clicked
       if (id === editEvent.id) {
-        dispatch(putEventThunk({ eventObject: editEvent }))
-          .then((response) => {
-            console.log(response);
-            setSuccessMessage(response.payload.message);
-          })
-          .catch((error) => {
-            console.log(error);
-            setErrorMessage(`Failed to update event!`);
-            setSuccessMessage(``);
-          });
+        const fromDate = new Date(`${fromValue}`);
+        const toDate = new Date(`${toValue}`);
+        if (fromDate.getTime() >= toDate.getTime()) {
+          setErrorMessage(`'To' date must be after 'From' date.`);
+          setSuccessMessage('');
+        } else {
+          dispatch(putEventThunk({ eventObject: editEvent }))
+            .then((response) => {
+              console.log(response);
+              setSuccessMessage(response.payload.message);
+            })
+            .catch((error) => {
+              console.log(error);
+              setErrorMessage(`Failed to update event!`);
+              setSuccessMessage('');
+            });
+        }
       }
     }
   };
@@ -87,7 +97,7 @@ const EventTable = () => {
         .catch((error) => {
           console.log(error.message);
           setErrorMessage(`Failed to delete event!`);
-          setSuccessMessage(``);
+          setSuccessMessage('');
         });
     }
   };
@@ -182,22 +192,21 @@ const EventTable = () => {
   );
 
   return (
-    <>
+    <div style={{ height: 500, width: '100%' }}>
       {errorAlert}
       {successAlert}
-      <div style={{ height: 500, width: '100%' }}>
-        <DataGrid
-          rowCount={50}
-          rows={eventListState.events}
-          columns={gridColumns}
-          sortModel={sortModel}
-          onSortModelChange={(model) => setSortModel(model)}
-          editMode="row"
-          editRowsModel={editRowsModel}
-          onEditRowsModelChange={handleEditRowsModelChange}
-        />
-      </div>
-    </>
+      <DataGrid
+        editMode="row"
+        rowCount={50}
+        rows={eventListState.events}
+        columns={gridColumns}
+        sortModel={sortModel}
+        onSortModelChange={(model) => setSortModel(model)}
+        editRowsModel={editRowsModel}
+        onEditRowsModelChange={handleEditRowsModelChange}
+        sx={{ mt: 4 }}
+      />
+    </div>
   );
 };
 

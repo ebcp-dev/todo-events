@@ -24,21 +24,22 @@ const initialState: EventListState = {
   loading: false
 };
 
+const dateTimeFormat = new Intl.DateTimeFormat('en-us', {
+  month: 'numeric',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric'
+});
+
 export const eventListSlice = createSlice({
   name: 'eventList',
   initialState,
   reducers: {
     addEvent: (state, action) => {
-      const dateTimeFormat = new Intl.DateTimeFormat('en-us', {
-        month: 'numeric',
-        day: 'numeric',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric'
-      });
       const event = {
         ...action.payload,
-        // parse from ISOstring
+        // parse from ISOstring for display
         from: dateTimeFormat.format(new Date(action.payload.from)),
         to: dateTimeFormat.format(new Date(action.payload.to))
       };
@@ -46,21 +47,13 @@ export const eventListSlice = createSlice({
     },
     setEventsList: (state, action) => {
       state.loading = true;
-
       action.payload.forEach((event) => {
-        const dateTimeFormat = new Intl.DateTimeFormat('en-us', {
-          month: 'numeric',
-          day: 'numeric',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric'
-        });
         state.events.push({
           ...event,
           // api returns event._id to event.id after postEvent
           // but getEvents response has event._id
           id: event._id ? event._id : event.id,
-          // parse from ISOstring
+          // parse from ISOstring to make it readable
           from: dateTimeFormat.format(new Date(event.from)),
           to: dateTimeFormat.format(new Date(event.to))
         });

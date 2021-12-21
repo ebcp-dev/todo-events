@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 // Material UI
-import Container from '@mui/material/Container';
+// import Container from '@mui/material/Container';
 // State management
 import { AppDispatch } from './redux/store';
 import { logOutUser, setCurrentUser } from './redux/slices/authSlice';
@@ -21,8 +21,8 @@ const App = () => {
   const dispatch = useDispatch<AppDispatch>();
   // check for token in localStorage
   if (localStorage.getItem('session')) {
+    // Parse session string into readble JSON object
     const localSession = JSON.parse(`${localStorage.getItem('session')}`);
-
     dispatch(setCurrentUser(localSession));
     // Compare current time to token expiration
     const loginTime = new Date(localSession.lastLogin);
@@ -39,18 +39,16 @@ const App = () => {
   return (
     <BrowserRouter>
       <Navbar />
-      <Container component="main" maxWidth="md">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          {/* protected routes */}
-          <Route path="/events" element={<ProtectedOutlet />}>
-            <Route path="/events" element={<Events />} />
-          </Route>
-          {/* protected routes */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Container>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        {/* protected routes */}
+        <Route path="/events" element={<ProtectedOutlet />}>
+          <Route path="/events" element={<Events />} />
+        </Route>
+        {/* protected routes */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </BrowserRouter>
   );
 };

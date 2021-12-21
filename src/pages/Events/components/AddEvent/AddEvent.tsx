@@ -9,14 +9,19 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
-import AddIcon from '@mui/icons-material/Add';
 import Snackbar from '@mui/material/Snackbar';
-import Grid from '@mui/material/Grid';
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+// Material Icons
+import AddIcon from '@mui/icons-material/Add';
 // State management
 import { addEvent, IEvent } from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch } from '../../../../app/redux/store';
 // API
 import { postEventThunk } from '../../../../api/eventListApi';
+
+import './AddEvent.scss';
 
 const AddEvent = () => {
   // Set default toDate 1 hour ahead of fromDate
@@ -35,12 +40,14 @@ const AddEvent = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const handleAddEvent = () => {
+    // Fields can't be empty
     if (!fromDate || !toDate || !eventInput) {
       setErrorMessage('Enter an event to add.');
-      setSuccessMessage(``);
+      setSuccessMessage('');
+      // 'fromDate' must be before 'toDate'
     } else if (fromDate.getTime() >= toDate.getTime()) {
       setErrorMessage(`'To' date must be after 'From' date.`);
-      setSuccessMessage(``);
+      setSuccessMessage('');
     } else {
       const event: IEvent = {
         from: fromDate.toISOString(),
@@ -55,11 +62,11 @@ const AddEvent = () => {
         })
         .catch((error) => {
           console.log(error);
-          setErrorMessage(`Failed to add event!`);
-          setSuccessMessage(``);
+          setErrorMessage('Failed to add event!');
+          setSuccessMessage('');
         });
-      setEventInput('');
       setEventCompleted(false);
+      setEventInput('');
       setErrorMessage('');
     }
   };
@@ -116,32 +123,35 @@ const AddEvent = () => {
     <>
       {errorAlert}
       {successAlert}
-      <Grid container spacing={1}>
-        <Grid item>
+      <CssBaseline />
+      <Box
+        component="form"
+        onSubmit={handleAddEvent}
+        sx={{
+          marginTop: 2
+        }}
+      >
+        <Stack direction={'row'} spacing={2}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DateTimePicker
-              renderInput={(props) => <TextField {...props} />}
               label="From"
+              renderInput={(props) => <TextField {...props} />}
               value={fromDate}
               onChange={(newValue) => {
                 setFromDate(newValue);
               }}
             />
           </LocalizationProvider>
-        </Grid>
-        <Grid item>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DateTimePicker
-              renderInput={(props) => <TextField {...props} />}
               label="To"
+              renderInput={(props) => <TextField {...props} />}
               value={toDate}
               onChange={(newValue) => {
                 setToDate(newValue);
               }}
             />
           </LocalizationProvider>
-        </Grid>
-        <Grid item>
           <TextField
             required
             id="outlined-required"
@@ -150,26 +160,22 @@ const AddEvent = () => {
             value={eventInput}
             onChange={handleTextInput}
           />
-        </Grid>
-        <Grid item>
           <FormControlLabel
+            label="Completed"
             control={
               <Checkbox checked={eventCompleted} onChange={handleCheckbox} />
             }
-            label="Completed"
           />
-        </Grid>
-        <Grid item>
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
             startIcon={<AddIcon />}
             onClick={handleAddEvent}
           >
             Add
           </Button>
-        </Grid>
-      </Grid>
+        </Stack>
+      </Box>
     </>
   );
 };
