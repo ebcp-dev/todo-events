@@ -118,6 +118,7 @@ const EventTable = () => {
       headerName: 'From',
       type: 'dateTime',
       flex: 1,
+      minWidth: 200,
       editable: true,
       valueFormatter: (params: GridValueFormatterParams) => {
         // first converts to JS Date, then to locale option through date-fns
@@ -129,18 +130,26 @@ const EventTable = () => {
       headerName: 'To',
       type: 'dateTime',
       flex: 1,
+      minWidth: 200,
       editable: true,
       valueFormatter: (params: GridValueFormatterParams) => {
         // first converts to JS Date, then to locale option through date-fns
         return dateTimeFormat.format(new Date(params.value as string));
       }
     },
-    { field: 'content', headerName: 'Content', flex: 1, editable: true },
+    {
+      field: 'content',
+      headerName: 'Content',
+      flex: 1,
+      minWidth: 200,
+      editable: true
+    },
     {
       field: 'isCompleted',
       headerName: 'Completed',
       type: 'boolean',
       flex: 1,
+      minWidth: 100,
       editable: true
     },
     {
@@ -148,6 +157,7 @@ const EventTable = () => {
       headerName: 'Actions',
       type: 'actions',
       flex: 1,
+      minWidth: 100,
       getActions: ({ id }) => {
         return [
           <GridActionsCellItem
@@ -173,22 +183,26 @@ const EventTable = () => {
 
   return (
     <div style={{ height: 500, width: '100%' }}>
-      <AlertMessage
-        alertType={errorMessage ? 'error' : 'success'}
-        alertMessage={errorMessage ? errorMessage : successMessage}
-        setAlertMessage={errorMessage ? setErrorMessage : setSuccessMessage}
-      />
-      <DataGrid
-        editMode="row"
-        rowCount={50}
-        rows={eventListState.events}
-        columns={gridColumns}
-        sortModel={sortModel}
-        onSortModelChange={(model) => setSortModel(model)}
-        editRowsModel={editRowsModel}
-        onEditRowsModelChange={handleEditRowsModelChange}
-        sx={{ mt: 4 }}
-      />
+      <div style={{ display: 'flex', height: '100%' }}>
+        <div style={{ flexGrow: 1 }}>
+          <AlertMessage
+            alertType={errorMessage ? 'error' : 'success'}
+            alertMessage={errorMessage ? errorMessage : successMessage}
+            setAlertMessage={errorMessage ? setErrorMessage : setSuccessMessage}
+          />
+          <DataGrid
+            editMode="row"
+            rowCount={50}
+            rows={eventListState.events}
+            columns={gridColumns}
+            sortModel={sortModel}
+            onSortModelChange={(model) => setSortModel(model)}
+            editRowsModel={editRowsModel}
+            onEditRowsModelChange={handleEditRowsModelChange}
+            sx={{ mt: 4 }}
+          />
+        </div>
+      </div>
     </div>
   );
 };

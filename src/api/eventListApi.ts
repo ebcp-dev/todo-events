@@ -2,45 +2,39 @@ import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 // Utils
 import axiosWithAuth from './axiosWithAuth';
-import { IEvent } from '../app/redux/slices/eventListSlice';
 
-const url = 'http://localhost:4000/';
+const apiUrl = 'http://localhost:4000/';
 
-interface User {
-  username: string;
-  password: string;
-  isAdmin?: boolean;
-}
+export const userSignUpThunk = createAsyncThunk(
+  'users/userSignUp',
+  async (args: { user }) => {
+    const signUpResponse = await axios.post(
+      apiUrl + 'api/user/signup',
+      args.user
+    );
 
-export const userSignUp = async (user: User) => {
-  const newUser: User = {
-    username: user.username,
-    password: user.password,
-    isAdmin: user.isAdmin
-  };
+    return await signUpResponse.data;
+  }
+);
 
-  const signUpResponse = await axios.post(url + 'api/user/signup', newUser);
+export const userLoginThunk = createAsyncThunk(
+  'users/userLogin',
+  async (args: { user }) => {
+    const loginResponse = await axios.post(
+      apiUrl + 'api/user/login',
+      args.user
+    );
 
-  return await signUpResponse.data;
-};
-
-export const userLogin = async (user: User) => {
-  const loginInfo: User = {
-    username: user.username,
-    password: user.password
-  };
-
-  const loginResponse = await axios.post(url + 'api/user/login', loginInfo);
-
-  return await loginResponse.data;
-};
+    return await loginResponse.data;
+  }
+);
 
 export const getEventThunk = createAsyncThunk(
   'events/getEvents',
   async (args: { offset?: string; limit?: string }) => {
     const offsetParam = args.offset ? `?offset=${args.offset}` : '';
     const limitParam = args.limit ? `&limit=${args.limit}` : '';
-    const getUrl = url + `api/event/${offsetParam}${limitParam}`;
+    const getUrl = apiUrl + `api/event/${offsetParam}${limitParam}`;
 
     const getResponse = await axiosWithAuth().get(getUrl);
 
@@ -50,9 +44,9 @@ export const getEventThunk = createAsyncThunk(
 
 export const postEventThunk = createAsyncThunk(
   'events/postEvent',
-  async (args: { eventObject: IEvent }) => {
+  async (args: { eventObject }) => {
     const postResponse = await axiosWithAuth().post(
-      url + 'api/event/',
+      apiUrl + 'api/event/',
       args.eventObject
     );
 
@@ -62,12 +56,12 @@ export const postEventThunk = createAsyncThunk(
 
 export const putEventThunk = createAsyncThunk(
   'events/putEvent',
-  async (args: { eventObject: IEvent }) => {
+  async (args: { eventObject }) => {
     const editId = args.eventObject._id
       ? args.eventObject._id
       : args.eventObject.id;
     const putResponse = await axiosWithAuth().put(
-      url + `api/event/${editId}`,
+      apiUrl + `api/event/${editId}`,
       args.eventObject
     );
 
@@ -77,9 +71,9 @@ export const putEventThunk = createAsyncThunk(
 
 export const deleteEventThunk = createAsyncThunk(
   'events/deleteEvent',
-  async (args: { eventId: string }) => {
+  async (args: { eventId }) => {
     const deleteResponse = await axiosWithAuth().delete(
-      url + 'api/event/' + args.eventId
+      apiUrl + `api/event/${args.eventId}`
     );
 
     return await deleteResponse.data;

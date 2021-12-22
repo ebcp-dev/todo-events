@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 // Material UI
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -6,8 +7,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
+// State management
+import { AppDispatch } from '../../../app/redux/store';
 // API
-import { userSignUp } from '../../../api/eventListApi';
+import { userSignUpThunk } from '../../../api/eventListApi';
 // Components
 import AlertMessage from '../../../common/Alerts/AlertMessage';
 
@@ -21,6 +24,8 @@ const Register = () => {
   // Feedback alerts
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleTextInput = (
     event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -47,11 +52,15 @@ const Register = () => {
       confirmPasswordInput &&
       passwordInput === confirmPasswordInput
     ) {
-      userSignUp({
-        username: usernameInput,
-        password: passwordInput,
-        isAdmin: false
-      })
+      dispatch(
+        userSignUpThunk({
+          user: {
+            username: usernameInput,
+            password: passwordInput,
+            isAdmin: false
+          }
+        })
+      )
         .then((result) => {
           console.log(result);
           setSuccessMessage(

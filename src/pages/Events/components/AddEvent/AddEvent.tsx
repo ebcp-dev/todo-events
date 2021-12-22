@@ -96,7 +96,10 @@ const AddEvent = () => {
           marginTop: 2
         }}
       >
-        <Stack direction={'row'} spacing={2}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={{ xs: 1, sm: 2, md: 4 }}
+        >
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DateTimePicker
               label="From"

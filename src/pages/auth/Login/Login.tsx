@@ -12,7 +12,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { AppDispatch, RootState } from '../../../app/redux/store';
 import { loginUser } from '../../../app/redux/slices/authSlice';
 // API
-import { userLogin } from '../../../api/eventListApi';
+import { userLoginThunk } from '../../../api/eventListApi';
 // Components
 import AlertMessage from '../../../common/Alerts/AlertMessage';
 
@@ -42,13 +42,18 @@ const Login = () => {
 
   const handleSubmit = () => {
     if (usernameInput && passwordInput) {
-      userLogin({
-        username: usernameInput,
-        password: passwordInput
-      })
+      dispatch(
+        userLoginThunk({
+          user: {
+            username: usernameInput,
+            password: passwordInput,
+            isAdmin: false
+          }
+        })
+      )
         .then((response) => {
           setErrorMessage('');
-          dispatch(loginUser({ session: response.data }));
+          dispatch(loginUser({ session: response.payload.data }));
         })
         .catch((error) => {
           console.log(error);

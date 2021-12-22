@@ -7,7 +7,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 // State management
 import { AppDispatch, RootState } from '../../app/redux/store';
-import { setEventsList } from '../../app/redux/slices/eventListSlice';
+import {
+  emptyEventsList,
+  setEventsList
+} from '../../app/redux/slices/eventListSlice';
 // API
 import { getEventThunk } from '../../api/eventListApi';
 // Components
@@ -25,6 +28,7 @@ const Events = () => {
   const eventListState = useSelector((state: RootState) => state.eventList);
 
   useEffect(() => {
+    // Set events to state
     dispatch(getEventThunk({}))
       .then((response) => {
         dispatch(setEventsList(response.payload.result));
@@ -33,10 +37,14 @@ const Events = () => {
         console.log(error);
         setErrorMessage('Failed to retrieve events.');
       });
+    return () => {
+      // Cleanup on dismount
+      dispatch(emptyEventsList());
+    };
   }, [dispatch]);
 
   return (
-    <Container component="main">
+    <Container component="main" sx={{ mb: 4 }}>
       <AlertMessage
         alertType={errorMessage ? 'error' : 'success'}
         alertMessage={errorMessage}
