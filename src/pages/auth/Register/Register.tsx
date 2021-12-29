@@ -76,8 +76,10 @@ const Register = () => {
           setSuccessMessage('');
         });
     } else if (passwordInput !== confirmPasswordInput) {
+      setSuccessMessage('');
       setErrorMessage('Passwords do not match.');
     } else {
+      setSuccessMessage('');
       setErrorMessage('Username and Password required.');
     }
   };

@@ -11,6 +11,9 @@ import {
   GridColumns,
   GridEditRowsModel,
   GridSortItem,
+  GridToolbarContainer,
+  GridToolbarDensitySelector,
+  GridToolbarFilterButton,
   GridValueFormatterParams
 } from '@mui/x-data-grid';
 // State management
@@ -39,13 +42,14 @@ const EventTable = () => {
   // Feedback alerts
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  const dispatch = useDispatch<AppDispatch>();
+  const eventListState = useSelector((state: RootState) => state.eventList);
+
   // Sets row data after editing
   const handleEditRowsModelChange = useCallback((model: GridEditRowsModel) => {
     setEditRowsModel(model);
   }, []);
-
-  const dispatch = useDispatch<AppDispatch>();
-  const eventListState = useSelector((state: RootState) => state.eventList);
 
   const handleSaveClick = (id) => (event) => {
     event.stopPropagation();
@@ -73,8 +77,8 @@ const EventTable = () => {
         } else {
           dispatch(putEventThunk({ eventObject: editedEvent }))
             .then((response) => {
-              console.log(response);
               setSuccessMessage(response.payload.message);
+              setErrorMessage('');
             })
             .catch((error) => {
               console.log(error);
@@ -159,15 +163,30 @@ const EventTable = () => {
       flex: 1,
       minWidth: 100,
       getActions: ({ id }) => {
+        if (Object.entries(editRowsModel).length > 0) {
+          const editedRowId = Object.entries(editRowsModel)[0][0];
+          if (id === editedRowId) {
+            return [
+              <GridActionsCellItem
+                key={id}
+                icon={<SaveIcon color="primary" />}
+                label="Save"
+                className="textPrimary"
+                onClick={handleSaveClick(id)}
+                color="inherit"
+              />,
+              <GridActionsCellItem
+                key={id}
+                icon={<DeleteIcon sx={{ color: '#BB1C2A' }} />}
+                label="Delete"
+                className="textPrimary"
+                onClick={handleDeleteClick(id)}
+                color="inherit"
+              />
+            ];
+          }
+        }
         return [
-          <GridActionsCellItem
-            key={id}
-            icon={<SaveIcon sx={{ color: '#03AAF9' }} />}
-            label="Save"
-            className="textPrimary"
-            onClick={handleSaveClick(id)}
-            color="inherit"
-          />,
           <GridActionsCellItem
             key={id}
             icon={<DeleteIcon sx={{ color: '#BB1C2A' }} />}
@@ -200,10 +219,23 @@ const EventTable = () => {
             editRowsModel={editRowsModel}
             onEditRowsModelChange={handleEditRowsModelChange}
             sx={{ mt: 4 }}
+            components={{
+              Toolbar: customToolbar
+            }}
           />
         </div>
       </div>
     </div>
+  );
+};
+
+const customToolbar = () => {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector />
+      <p>Double click on a row to edit.</p>
+    </GridToolbarContainer>
   );
 };
 

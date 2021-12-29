@@ -85,6 +85,7 @@ const Login = () => {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
+            required
             fullWidth
             label="Username"
             placeholder="Enter username"
@@ -94,6 +95,7 @@ const Login = () => {
             error={errorMessage ? true : false}
           />
           <TextField
+            required
             fullWidth
             label="Password"
             type={'password'}
