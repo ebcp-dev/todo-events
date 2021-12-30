@@ -16,7 +16,7 @@ import { getEventThunk } from '../../api/eventListApi';
 // Components
 import EventTable from './components/EventTable/EventGrid';
 import AddEvent from './components/AddEvent/AddEvent';
-import AlertMessage from '../../common/Alerts/AlertMessage';
+import AlertMessage from '../../common/AlertMessage/AlertMessage';
 
 import './Events.scss';
 

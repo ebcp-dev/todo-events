@@ -19,7 +19,7 @@ import { AppDispatch } from '../../../../app/redux/Store';
 // API
 import { postEventThunk } from '../../../../api/eventListApi';
 // Components
-import AlertMessage from '../../../../common/Alerts/AlertMessage';
+import AlertMessage from '../../../../common/AlertMessage/AlertMessage';
 
 import './AddEvent.scss';
 
@@ -59,6 +59,7 @@ const AddEvent = () => {
         .then((response) => {
           setSuccessMessage(response.payload.message);
           dispatch(addEvent(response.payload.data));
+          setErrorMessage('');
         })
         .catch((error) => {
           console.log(error);
@@ -67,7 +68,6 @@ const AddEvent = () => {
         });
       setEventCompleted(false);
       setEventInput('');
-      setErrorMessage('');
     }
   };
 

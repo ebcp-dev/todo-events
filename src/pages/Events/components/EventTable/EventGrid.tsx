@@ -25,7 +25,7 @@ import { AppDispatch, RootState } from '../../../../app/redux/Store';
 // API
 import { deleteEventThunk, putEventThunk } from '../../../../api/eventListApi';
 // Components
-import AlertMessage from '../../../../common/Alerts/AlertMessage';
+import AlertMessage from '../../../../common/AlertMessage/AlertMessage';
 // Utils
 import { dateTimeFormat } from '../../../../utils/dateTime/dateTimeUtils';
 
@@ -98,6 +98,7 @@ const EventTable = () => {
       dispatch(deleteEventThunk({ eventId: id }))
         .then((response) => {
           setSuccessMessage(response.payload.message);
+          setErrorMessage('');
           dispatch(removeEvent(id));
         })
         .catch((error) => {

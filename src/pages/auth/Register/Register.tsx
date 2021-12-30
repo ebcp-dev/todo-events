@@ -12,7 +12,7 @@ import { AppDispatch } from '../../../app/redux/Store';
 // API
 import { userSignUpThunk } from '../../../api/eventListApi';
 // Components
-import AlertMessage from '../../../common/Alerts/AlertMessage';
+import AlertMessage from '../../../common/AlertMessage/AlertMessage';
 
 import './Register.scss';
 
@@ -61,18 +61,22 @@ const Register = () => {
           }
         })
       )
-        .then((result) => {
-          console.log(result);
-          setSuccessMessage(
-            'User created. You can now log in to your account.'
-          );
+        .then((response) => {
+          console.log(response);
+          if (response.type === 'users/userSignUp/rejected') {
+            setErrorMessage('Failed to create user.');
+            setSuccessMessage('');
+            return;
+          }
+          setSuccessMessage(response.payload.message);
           setUsernameInput('');
           setPasswordInput('');
           setConfirmPasswordInput('');
           setErrorMessage('');
         })
         .catch((error) => {
-          setErrorMessage(error.response.data.message);
+          console.log(error);
+          setErrorMessage('Failed to create user.');
           setSuccessMessage('');
         });
     } else if (passwordInput !== confirmPasswordInput) {

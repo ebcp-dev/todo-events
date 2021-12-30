@@ -14,7 +14,7 @@ import { loginUser } from '../../../app/redux/slices/authSlice';
 // API
 import { userLoginThunk } from '../../../api/eventListApi';
 // Components
-import AlertMessage from '../../../common/Alerts/AlertMessage';
+import AlertMessage from '../../../common/AlertMessage/AlertMessage';
 
 import './Login.scss';
 
@@ -52,12 +52,17 @@ const Login = () => {
         })
       )
         .then((response) => {
+          console.log(response);
+          if (response.type === 'users/userLogin/rejected') {
+            setErrorMessage('Failed to login user.');
+            return;
+          }
           setErrorMessage('');
           dispatch(loginUser({ session: response.payload.data }));
         })
         .catch((error) => {
           console.log(error);
-          setErrorMessage(error.response.data.message);
+          setErrorMessage('Login failed');
         });
     } else {
       setErrorMessage('Username and Password required.');

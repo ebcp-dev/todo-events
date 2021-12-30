@@ -29,12 +29,13 @@ export const eventListSlice = createSlice({
   initialState,
   reducers: {
     addEvent: (state, action) => {
-      state.events.push(action.payload);
+      state.events = [...state.events, action.payload];
     },
     setEventsList: (state, action) => {
       state.loading = true;
+      const setEvents: IEvent[] = [];
       action.payload.forEach((event) => {
-        state.events.push({
+        setEvents.push({
           ...event,
           // api returns event._id to event.id after postEvent
           // but getEvents response has event._id
@@ -42,6 +43,7 @@ export const eventListSlice = createSlice({
         });
       });
 
+      state.events = state.events.concat(setEvents);
       state.loading = false;
     },
     removeEvent: (state, action) => {
