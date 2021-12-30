@@ -4,9 +4,9 @@ import { useDispatch } from 'react-redux';
 // Material UI
 // import Container from '@mui/material/Container';
 // State management
-import { AppDispatch } from './redux/store';
-import { logOutUser, setCurrentUser } from './redux/slices/authSlice';
-import { emptyEventsList } from './redux/slices/eventListSlice';
+import { AppDispatch } from './redux/Store';
+import { logOutUser, setCurrentUser } from './redux/slices/AuthSlice';
+import { emptyEventsList } from './redux/slices/EventListSlice';
 // Components
 import ProtectedOutlet from '../utils/routes/ProtectedOutlet';
 import Navbar from '../common/Navbar/Navbar';
@@ -40,6 +40,7 @@ const App = () => {
     <BrowserRouter>
       <Navbar />
       <Routes>
+        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {/* protected routes */}

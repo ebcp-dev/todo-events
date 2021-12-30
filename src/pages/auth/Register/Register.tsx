@@ -8,9 +8,9 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 // State management
-import { AppDispatch } from '../../../app/redux/store';
+import { AppDispatch } from '../../../app/redux/Store';
 // API
-import { userSignUpThunk } from '../../../api/eventListApi';
+import { userSignUpThunk } from '../../../api/EventListApi';
 // Components
 import AlertMessage from '../../../common/Alerts/AlertMessage';
 

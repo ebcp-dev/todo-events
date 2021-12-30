@@ -6,15 +6,15 @@ import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 // State management
-import { AppDispatch, RootState } from '../../app/redux/store';
+import { AppDispatch, RootState } from '../../app/redux/Store';
 import {
   emptyEventsList,
   setEventsList
-} from '../../app/redux/slices/eventListSlice';
+} from '../../app/redux/slices/EventListSlice';
 // API
-import { getEventThunk } from '../../api/eventListApi';
+import { getEventThunk } from '../../api/EventListApi';
 // Components
-import EventTable from './components/EventTable/EventTable';
+import EventTable from './components/EventTable/EventGrid';
 import AddEvent from './components/AddEvent/AddEvent';
 import AlertMessage from '../../common/Alerts/AlertMessage';
 
@@ -29,7 +29,7 @@ const Events = () => {
 
   useEffect(() => {
     // Set events to state
-    dispatch(getEventThunk({}))
+    dispatch(getEventThunk({ offset: '0', limit: '100' }))
       .then((response) => {
         dispatch(setEventsList(response.payload.result));
       })

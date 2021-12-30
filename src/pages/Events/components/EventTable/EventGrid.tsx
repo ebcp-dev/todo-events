@@ -20,16 +20,20 @@ import {
 import {
   IEvent,
   removeEvent
-} from '../../../../app/redux/slices/eventListSlice';
-import { AppDispatch, RootState } from '../../../../app/redux/store';
+} from '../../../../app/redux/slices/EventListSlice';
+import { AppDispatch, RootState } from '../../../../app/redux/Store';
 // API
-import { deleteEventThunk, putEventThunk } from '../../../../api/eventListApi';
+import { deleteEventThunk, putEventThunk } from '../../../../api/EventListApi';
 // Components
 import AlertMessage from '../../../../common/Alerts/AlertMessage';
+// Utils
+import { dateTimeFormat } from '../../../../utils/dateTime/DateTimeUtils';
 
-import './EventTable.scss';
+import './EventGrid.scss';
 
 const EventTable = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const eventListState = useSelector((state: RootState) => state.eventList);
   // default sorting model for Data Grid
   const [sortModel, setSortModel] = useState<GridSortItem[]>([
     {
@@ -42,9 +46,6 @@ const EventTable = () => {
   // Feedback alerts
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-
-  const dispatch = useDispatch<AppDispatch>();
-  const eventListState = useSelector((state: RootState) => state.eventList);
 
   // Sets row data after editing
   const handleEditRowsModelChange = useCallback((model: GridEditRowsModel) => {
@@ -94,11 +95,10 @@ const EventTable = () => {
     event.stopPropagation();
     if (id) {
       // Find and remove from redux state
-      const eventObj = eventListState.events.find((obj) => obj.id === id);
       dispatch(deleteEventThunk({ eventId: id }))
         .then((response) => {
           setSuccessMessage(response.payload.message);
-          dispatch(removeEvent(eventObj));
+          dispatch(removeEvent(id));
         })
         .catch((error) => {
           console.log(error.message);
@@ -107,14 +107,6 @@ const EventTable = () => {
         });
     }
   };
-
-  const dateTimeFormat = new Intl.DateTimeFormat('en-us', {
-    month: 'numeric',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric'
-  });
 
   const gridColumns: GridColumns = [
     {
@@ -163,6 +155,7 @@ const EventTable = () => {
       flex: 1,
       minWidth: 100,
       getActions: ({ id }) => {
+        // Only show save button on row being edited.
         if (Object.entries(editRowsModel).length > 0) {
           const editedRowId = Object.entries(editRowsModel)[0][0];
           if (id === editedRowId) {
@@ -211,7 +204,7 @@ const EventTable = () => {
           />
           <DataGrid
             editMode="row"
-            rowCount={50}
+            rowCount={100}
             rows={eventListState.events}
             columns={gridColumns}
             sortModel={sortModel}

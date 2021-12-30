@@ -7,8 +7,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 // State management
-import { AppDispatch, RootState } from '../../app/redux/store';
-import { logOutUser } from '../../app/redux/slices/authSlice';
+import { AppDispatch, RootState } from '../../app/redux/Store';
+import { logOutUser } from '../../app/redux/slices/AuthSlice';
 
 import './Navbar.scss';
 

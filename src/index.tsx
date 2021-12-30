@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import CssBaseline from '@mui/material/CssBaseline';
 
-import { store } from './app/redux/store';
+import { store } from './app/redux/Store';
 
 import App from './app/App';
 

@@ -9,10 +9,10 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 // State management
-import { AppDispatch, RootState } from '../../../app/redux/store';
-import { loginUser } from '../../../app/redux/slices/authSlice';
+import { AppDispatch, RootState } from '../../../app/redux/Store';
+import { loginUser } from '../../../app/redux/slices/AuthSlice';
 // API
-import { userLoginThunk } from '../../../api/eventListApi';
+import { userLoginThunk } from '../../../api/EventListApi';
 // Components
 import AlertMessage from '../../../common/Alerts/AlertMessage';
 

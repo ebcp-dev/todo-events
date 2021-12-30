@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import type { RootState } from '../store';
+import type { RootState } from '../Store';
 
 // Define a type for the slice state
 export interface IAuthState {

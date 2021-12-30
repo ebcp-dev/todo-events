@@ -1,14 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import type { RootState } from '../store';
+import type { RootState } from '../Store';
 
 export interface IEvent {
   _id?: string;
   id?: string;
-  from?: string;
-  to?: string;
-  content?: string;
-  isCompleted?: boolean;
+  from: string;
+  to: string;
+  content: string;
+  isCompleted: boolean;
   creator?: string;
 }
 
@@ -46,7 +46,7 @@ export const eventListSlice = createSlice({
     },
     removeEvent: (state, action) => {
       const updatedEvents = state.events.filter(
-        (event) => event.id !== action.payload.id
+        (event) => event.id !== action.payload
       );
       state.events = updatedEvents;
     },
