@@ -14,10 +14,10 @@ import Stack from '@mui/material/Stack';
 // Material Icons
 import AddIcon from '@mui/icons-material/Add';
 // State management
-import { addEvent, IEvent } from '../../../../app/redux/slices/EventListSlice';
+import { addEvent, IEvent } from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch } from '../../../../app/redux/Store';
 // API
-import { postEventThunk } from '../../../../api/EventListApi';
+import { postEventThunk } from '../../../../api/eventListApi';
 // Components
 import AlertMessage from '../../../../common/Alerts/AlertMessage';
 

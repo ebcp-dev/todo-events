@@ -10,7 +10,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 // State management
 import { AppDispatch } from '../../../app/redux/Store';
 // API
-import { userSignUpThunk } from '../../../api/EventListApi';
+import { userSignUpThunk } from '../../../api/eventListApi';
 // Components
 import AlertMessage from '../../../common/Alerts/AlertMessage';
 

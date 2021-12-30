@@ -5,8 +5,8 @@ import { useDispatch } from 'react-redux';
 // import Container from '@mui/material/Container';
 // State management
 import { AppDispatch } from './redux/Store';
-import { logOutUser, setCurrentUser } from './redux/slices/AuthSlice';
-import { emptyEventsList } from './redux/slices/EventListSlice';
+import { logOutUser, setCurrentUser } from './redux/slices/authSlice';
+import { emptyEventsList } from './redux/slices/eventListSlice';
 // Components
 import ProtectedOutlet from '../utils/routes/ProtectedOutlet';
 import Navbar from '../common/Navbar/Navbar';

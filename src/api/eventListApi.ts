@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 // Utils
-import axiosWithAuth from './AxiosWithAuth';
+import axiosWithAuth from './axiosWithAuth';
 
 const apiUrl = 'http://localhost:4000/';
 

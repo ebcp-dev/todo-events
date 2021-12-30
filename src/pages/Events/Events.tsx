@@ -10,9 +10,9 @@ import { AppDispatch, RootState } from '../../app/redux/Store';
 import {
   emptyEventsList,
   setEventsList
-} from '../../app/redux/slices/EventListSlice';
+} from '../../app/redux/slices/eventListSlice';
 // API
-import { getEventThunk } from '../../api/EventListApi';
+import { getEventThunk } from '../../api/eventListApi';
 // Components
 import EventTable from './components/EventTable/EventGrid';
 import AddEvent from './components/AddEvent/AddEvent';

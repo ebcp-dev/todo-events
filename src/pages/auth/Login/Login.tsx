@@ -10,9 +10,9 @@ import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 // State management
 import { AppDispatch, RootState } from '../../../app/redux/Store';
-import { loginUser } from '../../../app/redux/slices/AuthSlice';
+import { loginUser } from '../../../app/redux/slices/authSlice';
 // API
-import { userLoginThunk } from '../../../api/EventListApi';
+import { userLoginThunk } from '../../../api/eventListApi';
 // Components
 import AlertMessage from '../../../common/Alerts/AlertMessage';
 

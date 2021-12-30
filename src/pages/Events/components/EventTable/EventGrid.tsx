@@ -20,14 +20,14 @@ import {
 import {
   IEvent,
   removeEvent
-} from '../../../../app/redux/slices/EventListSlice';
+} from '../../../../app/redux/slices/eventListSlice';
 import { AppDispatch, RootState } from '../../../../app/redux/Store';
 // API
-import { deleteEventThunk, putEventThunk } from '../../../../api/EventListApi';
+import { deleteEventThunk, putEventThunk } from '../../../../api/eventListApi';
 // Components
 import AlertMessage from '../../../../common/Alerts/AlertMessage';
 // Utils
-import { dateTimeFormat } from '../../../../utils/dateTime/DateTimeUtils';
+import { dateTimeFormat } from '../../../../utils/dateTime/dateTimeUtils';
 
 import './EventGrid.scss';
 
