@@ -29,7 +29,7 @@ const Events = () => {
 
   useEffect(() => {
     // Set events to state
-    dispatch(getEventThunk({ offset: '0', limit: '100' }))
+    dispatch(getEventThunk({}))
       .then((response) => {
         dispatch(setEventsList(response.payload.result));
       })
